@@ -12,7 +12,7 @@ export const GlobalProvider = ({ children }) => {
   // Theme State (Default to 'dark')
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
-  const API_KEY = "a576f39b59bd078e23d15ab9eaa6e9ff";
+  const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const BASE_URL = "https://api.themoviedb.org/3";
 
   // 1. Handle Theme Changes
