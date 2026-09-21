@@ -1,11 +1,18 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import { fetchTrendingMovies } from "../utils/movieApi";
 
 export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
-  const [watchlist, setWatchlist] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [watchlist, setWatchlist] = useState(() => {
+    const saved = localStorage.getItem("moviesmax-watchlist");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem("moviesmax-favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,12 +37,20 @@ export const GlobalProvider = ({ children }) => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  async function fetchTrending() {
+    try {
+      const results = await fetchTrendingMovies();
+      setTrending(results);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      setLoading(false);
+    }
+  }
+
   // 2. Load Data
   useEffect(() => {
-    const savedWatchlist = localStorage.getItem("moviesmax-watchlist");
-    const savedFavorites = localStorage.getItem("moviesmax-favorites");
-    if (savedWatchlist) setWatchlist(JSON.parse(savedWatchlist));
-    if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTrending();
   }, []);
 
@@ -48,15 +63,7 @@ export const GlobalProvider = ({ children }) => {
     localStorage.setItem("moviesmax-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  const fetchTrending = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}`);
-      setTrending(res.data.results);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching movies:", error);
-    }
-  };
+
 
   const toggleWatchlist = (movie) => {
     const exists = watchlist.find((item) => item.id === movie.id);

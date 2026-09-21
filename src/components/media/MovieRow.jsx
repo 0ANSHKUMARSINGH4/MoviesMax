@@ -1,128 +1,145 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { GlobalContext } from "../../context/GlobalState";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Mousewheel } from "swiper/modules";
-import { Plus, Check, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { fetchMoviesByCategory } from "../../utils/movieApi";
+import { CATEGORY_CATALOG } from "../../utils/movieData";
+import MovieCard from "./MovieCard";
 
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-
-const MovieRow = ({ title, endpoint, isJikan = false, onMovieClick }) => {
-  const { API_KEY, BASE_URL, watchlist, toggleWatchlist } = useContext(GlobalContext);
-  const [movies, setMovies] = useState([]);
+const MovieRow = ({
+  title,
+  endpoint,
+  isJikan = false,
+  vertical = "movies",
+  items,
+  onMovieClick,
+}) => {
+  const [movies, setMovies] = useState(items || []);
+  const rowRef = useRef(null);
 
   useEffect(() => {
+    if (items && items.length > 0) {
+      setMovies(items);
+      return;
+    }
+
+    let isMounted = true;
     const fetchMovies = async () => {
       try {
         let results = [];
-        if (isJikan) {
-            // Fetch from Jikan API (Anime)
-            const res = await axios.get(`https://api.jikan.moe/v4${endpoint}`);
-            results = res.data.data.map(anime => ({
+        if (isJikan && endpoint) {
+          try {
+            const res = await axios.get(`https://api.jikan.moe/v4${endpoint}`, { timeout: 3500 });
+            if (res.data?.data && res.data.data.length > 0) {
+              results = res.data.data.map((anime) => ({
                 id: anime.mal_id,
                 title: anime.title,
                 poster_path: anime.images.jpg.large_image_url,
-                vote_average: anime.score,
-                isJikan: true
-            }));
+                backdrop_path: anime.images.jpg.large_image_url,
+                vote_average: anime.score || 8.6,
+                isJikan: true,
+                category: "Anime",
+                release_date: anime.aired?.from ? String(anime.aired.from).slice(0, 4) : "2024"
+              }));
+            }
+          } catch (e) {
+            // Instant fallback to curated anime catalog on network/rate-limit error
+            results = CATEGORY_CATALOG["currently airing simulcasts"];
+          }
         } else {
-            // Fetch from TMDB API (Movies)
-            const res = await axios.get(`${BASE_URL}${endpoint}`, {
-                params: { api_key: API_KEY },
-            });
-            results = res.data.results;
+          results = await fetchMoviesByCategory(title);
         }
-        setMovies(results);
-      } catch (error) {
-        console.error("Error fetching row:", title);
+
+        if (isMounted) {
+          if (results && results.length > 0) {
+            setMovies(results);
+          } else {
+            setMovies(CATEGORY_CATALOG["trending blockbusters"]);
+          }
+        }
+      } catch {
+        if (isMounted) {
+          setMovies(CATEGORY_CATALOG["trending blockbusters"]);
+        }
       }
     };
+
     fetchMovies();
-  }, [endpoint, API_KEY, BASE_URL, title, isJikan]);
+    return () => {
+      isMounted = false;
+    };
+  }, [endpoint, title, isJikan, items]);
+
+  const handleScroll = (direction) => {
+    if (rowRef.current) {
+      const scrollAmount = rowRef.current.clientWidth * 0.75;
+      rowRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const accentColor = {
+    movies: "bg-blue-600 shadow-[0_0_10px_#2563eb]",
+    series: "bg-purple-600 shadow-[0_0_10px_#9333ea]",
+    anime: "bg-orange-600 shadow-[0_0_10px_#ea580c]",
+    sports: "bg-emerald-600 shadow-[0_0_10px_#10b981]",
+    esports: "bg-pink-600 shadow-[0_0_10px_#ec4899]",
+  }[vertical] || (isJikan ? "bg-orange-600 shadow-[0_0_10px_#ea580c]" : "bg-blue-600 shadow-[0_0_10px_#2563eb]");
 
   return (
-    <div className="py-4 px-8 md:px-12 space-y-4">
-      {/* Row Title - Blue Hover Effect */}
-      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer inline-block pl-1 border-l-4 border-transparent hover:border-blue-600">
-        {title}
-      </h2>
+    <section className="relative py-4 px-4 sm:px-8 md:px-12 group/row select-none">
+      {/* SECTION HEADER */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-1 h-5 rounded-full ${accentColor}`} />
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white font-display flex items-center gap-2">
+            {title}
+            {isJikan && (
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full">
+                Simulcast
+              </span>
+            )}
+          </h2>
+        </div>
 
-      <Swiper
-        modules={[Navigation, Mousewheel]}
-        mousewheel={true}
-        navigation={true}
-        spaceBetween={20}
-        slidesPerView={2.5}
-        breakpoints={{
-          640: { slidesPerView: 3.5 },
-          768: { slidesPerView: 4.5 },
-          1024: { slidesPerView: 5.5 },
-          1280: { slidesPerView: 6.5 },
-        }}
-        className="w-full h-full !pb-8 !px-1"
+        <span className="text-xs text-gray-400 hover:text-white font-semibold cursor-pointer transition-colors hidden sm:inline">
+          Explore All →
+        </span>
+      </div>
+
+      {/* FULL-HEIGHT EDGE CAROUSEL HANDLES */}
+      <button
+        onClick={() => handleScroll("left")}
+        className="hidden md:flex absolute left-2 md:left-4 top-14 bottom-8 w-12 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-r border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
+        title="Scroll Left"
       >
-        {movies.map((movie) => {
-          const inWatchlist = watchlist.find((item) => item.id === movie.id);
+        <ChevronLeft size={28} />
+      </button>
 
-          return (
-            <SwiperSlide key={movie.id}>
-              {/* CARD CONTAINER - Blue Theme & Light/Dark Mode */}
-              <div
-                onClick={() => onMovieClick && onMovieClick(movie)}
-                className="group relative cursor-pointer rounded-xl overflow-hidden
-                bg-white dark:bg-[#181818] shadow-sm dark:shadow-none
-                transition-all duration-300 hover:scale-105 hover:-translate-y-2
-                hover:shadow-xl hover:shadow-blue-900/20 dark:hover:shadow-blue-900/40
-                ring-1 ring-gray-200 dark:ring-white/5 hover:ring-blue-600 dark:hover:ring-blue-500/50"
-              >
-                {/* Image Aspect Ratio Container */}
-                <div className="aspect-[2/3] w-full relative">
-                    <img
-                      src={movie.isJikan ? movie.poster_path : `https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:contrast-110"
-                    />
+      <button
+        onClick={() => handleScroll("right")}
+        className="hidden md:flex absolute right-2 md:right-4 top-14 bottom-8 w-12 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-l border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
+        title="Scroll Right"
+      >
+        <ChevronRight size={28} />
+      </button>
 
-                    {/* DARK OVERLAY (Only visible on hover) */}
-                    <div className="absolute inset-0 bg-blue-900/20 dark:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
-
-                        {/* Play Button - Blue */}
-                        <div className="bg-blue-600 p-3 rounded-full text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-75 shadow-lg shadow-blue-500/50">
-                            <Play fill="currentColor" size={20} />
-                        </div>
-
-                        {/* Watchlist Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleWatchlist(movie);
-                            }}
-                            className={`p-2.5 rounded-full transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-100 shadow-lg ${inWatchlist ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-blue-50 hover:text-blue-600'}`}
-                        >
-                            {inWatchlist ? <Check size={20} /> : <Plus size={20} />}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Text Content */}
-                <div className="p-3 bg-white dark:bg-[#181818]">
-                   <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                     {movie.title}
-                   </h3>
-                   <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-gray-500 border border-gray-300 dark:border-gray-700 px-1 rounded">HD</span>
-                      <span className="text-[10px] text-gray-500">{movie.isJikan ? 'Anime' : 'Movie'}</span>
-                   </div>
-                </div>
-              </div>
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
-    </div>
+      {/* HORIZONTAL CAROUSEL CONTAINER */}
+      <div
+        ref={rowRef}
+        className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 custom-scrollbar no-scrollbar scroll-smooth"
+      >
+        {movies.map((movie, index) => (
+          <MovieCard
+            key={`${movie.id || movie.title}-${index}`}
+            movie={movie}
+            onMovieClick={onMovieClick}
+            isAnime={isJikan}
+          />
+        ))}
+      </div>
+    </section>
   );
 };
 
