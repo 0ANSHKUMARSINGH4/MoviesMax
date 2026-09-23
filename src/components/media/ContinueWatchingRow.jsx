@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalState";
 import { normalizeMedia } from "../../utils/mediaUtils";
+import SmartImage from "./SmartImage";
 
 const ContinueWatchingRow = ({ onMovieClick }) => {
   const { watchlist, toggleWatchlist } = useContext(GlobalContext);
@@ -46,12 +47,15 @@ const ContinueWatchingRow = ({ onMovieClick }) => {
               className="relative flex-none w-64 sm:w-72 md:w-80 group cursor-pointer select-none rounded-2xl overflow-hidden bg-[#0f1118] border border-white/10 hover:border-emerald-500/50 transition-colors duration-300 hover:shadow-2xl hover:shadow-emerald-950/40 will-change-transform"
             >
               {/* 16:9 Thumbnail Container */}
-              <div className="relative aspect-video w-full overflow-hidden bg-black">
-                <img
+              <div className="relative aspect-video w-full overflow-hidden">
+                <SmartImage
                   src={item.backdrop_path}
-                  alt={item.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  alt=""
+                  title={item.title}
+                  vertical="movies"
+                  decorative
+                  className="absolute inset-0 w-full h-full"
+                  imgClassName="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
                 {/* Dark Vignette Overlay */}

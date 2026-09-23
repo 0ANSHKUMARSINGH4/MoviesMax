@@ -78,3 +78,28 @@ body {
   -webkit-text-fill-color: transparent;
   animation: shift-gradient 8s ease infinite;
 }
+
+/* ── SmartImage shimmer ──────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* ── Route-level page skeleton ───────────────────────────────── */
+/* Prevents a fully black viewport while the hero backdrop loads.
+   Applied in App.jsx via Suspense fallback. */
+.page-skeleton {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #0B1120 0%,
+    #111827 40%,
+    #0B1120 100%
+  );
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}

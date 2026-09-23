@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { Trophy, TrendingUp, Minus, TrendingDown } from "lucide-react";
+import SmartImage from "./SmartImage";
 
 const MOCK_LEADERBOARDS = {
   sports: [
@@ -70,8 +71,16 @@ const Leaderboard = ({ vertical = "sports", title = "All-Time Greats", accentCol
               </div>
               
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-black/50 hidden sm:block">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="w-10 h-10 rounded-full overflow-hidden hidden sm:block flex-shrink-0">
+                  <SmartImage
+                    src={item.image}
+                    alt=""
+                    title={item.name}
+                    vertical={vertical}
+                    decorative
+                    className="w-full h-full"
+                    imgClassName="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-sm sm:text-base leading-tight">

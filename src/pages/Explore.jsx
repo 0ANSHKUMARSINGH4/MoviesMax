@@ -5,6 +5,17 @@ import MovieModal from "../components/modal/MovieModal";
 import MovieCard from "../components/media/MovieCard";
 import { fetchMoviesByCategory } from "../utils/movieApi";
 import { CATEGORY_CATALOG } from "../utils/movieData";
+import Section from "../components/layout/Section";
+
+/**
+ * Explore — full-catalog browse page.
+ *
+ * Grid: grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6
+ * Cards are naturally sized by the MovieCard component (w-36 sm:w-44 md:w-52 lg:w-56).
+ * Each filter is seeded with ≥24 items so the first viewport is full.
+ *
+ * Container via Section (container-mx from DESIGN.md §C).
+ */
 
 const Explore = () => {
   const [movies, setMovies] = useState([]);
@@ -14,15 +25,43 @@ const Explore = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   const categories = [
-    { id: "action", name: "Action", type: "catalog", key: "action thrillers" },
-    { id: "blockbusters", name: "Blockbusters", type: "catalog", key: "trending blockbusters" },
-    { id: "classics", name: "Top Rated Classics", type: "catalog", key: "top rated classics" },
-    { id: "scifi", name: "Sci-Fi & Cyberpunk", type: "catalog", key: "sci-fi & cyberpunk" },
-    { id: "series", name: "Prestige TV", type: "catalog", key: "western prestige tv" },
-    { id: "kdrama", name: "K-Dramas", type: "catalog", key: "korean dramas (k-dramas)" },
-    { id: "anime", name: "Anime Simulcasts", type: "jikan" },
-    { id: "comedy", name: "Comedy Hits", type: "catalog", key: "comedy hits" },
+    { id: "action",       name: "Action",             type: "catalog", key: "action thrillers" },
+    { id: "blockbusters", name: "Blockbusters",        type: "catalog", key: "trending blockbusters" },
+    { id: "classics",     name: "Top Rated",           type: "catalog", key: "top rated classics" },
+    { id: "scifi",        name: "Sci-Fi",              type: "catalog", key: "sci-fi & cyberpunk" },
+    { id: "series",       name: "Prestige TV",         type: "catalog", key: "western prestige tv" },
+    { id: "kdrama",       name: "K-Dramas",            type: "catalog", key: "korean dramas (k-dramas)" },
+    { id: "anime",        name: "Anime",               type: "jikan" },
+    { id: "comedy",       name: "Comedy",              type: "catalog", key: "comedy hits" },
+    { id: "crime",        name: "Crime & Thriller",    type: "catalog", key: "crime & mystery thrillers" },
+    { id: "scifi-anime",  name: "Sci-Fi Anime",        type: "catalog", key: "sci-fi & fantasy epics" },
   ];
+
+  /**
+   * Build an initial seed of ≥24 items by merging all catalog entries.
+   * This ensures the first render is never sparse.
+   */
+  const buildSeed = (categoryId) => {
+    const cat = categories.find((c) => c.id === categoryId);
+    if (!cat) return [];
+    if (cat.type === "jikan") {
+      // Jikan is async — return empty; useEffect fills it in
+      return [];
+    }
+    // Pull primary key first, then pad from other catalog categories until ≥24
+    const primary = CATEGORY_CATALOG[cat.key] || [];
+    let pool = [...primary];
+    const allKeys = Object.keys(CATEGORY_CATALOG);
+    let i = 0;
+    while (pool.length < 24 && i < allKeys.length) {
+      if (allKeys[i] !== cat.key) {
+        const extra = CATEGORY_CATALOG[allKeys[i]] || [];
+        pool = [...pool, ...extra.filter((m) => !pool.some((p) => p.id === m.id))];
+      }
+      i++;
+    }
+    return pool.slice(0, 48);
+  };
 
   const fetchMovies = async (reset = false) => {
     if (loading) return;
@@ -46,10 +85,18 @@ const Explore = () => {
             }));
           }
         } catch {
-          newResults = CATEGORY_CATALOG["currently airing simulcasts"];
+          // fallback: merge all anime catalog entries for a full page
+          const allAnime = [
+            ...(CATEGORY_CATALOG["top rated classics (crunchyroll)"] || []),
+            ...(CATEGORY_CATALOG["currently airing simulcasts"] || []),
+            ...(CATEGORY_CATALOG["top anime movies & features"] || []),
+          ];
+          newResults = allAnime.filter((m, i, a) => a.findIndex((x) => x.id === m.id) === i);
         }
       } else {
-        newResults = await fetchMoviesByCategory(category.key || category.name);
+        // Try API, then fall back to the seeded catalog pool
+        const apiResult = await fetchMoviesByCategory(category.key || category.name);
+        newResults = apiResult && apiResult.length > 0 ? apiResult : (CATEGORY_CATALOG[category.key] || []);
       }
       setMovies((prev) => (reset ? newResults : [...prev, ...newResults]));
     } catch (error) {
@@ -61,6 +108,9 @@ const Explore = () => {
 
   useEffect(() => {
     setPage(1);
+    // Immediately show seeded items to eliminate the empty-above-Load-More issue
+    const seed = buildSeed(selectedCategory);
+    if (seed.length > 0) setMovies(seed);
     fetchMovies(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory]);
@@ -70,64 +120,81 @@ const Explore = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  return (
-    <div className="min-h-screen pt-28 px-4 md:px-12 pb-24 bg-[#07080b] text-white">
-      {/* STICKY CATEGORIES HEADER */}
-      <div className="sticky top-20 z-30 bg-[#07080b]/95 backdrop-blur-2xl py-4 -mx-4 md:-mx-12 px-4 md:px-12 border-b border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-            <Compass size={20} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-white font-display">
-              Explore Universe
-            </h1>
-            <p className="text-xs text-gray-400 font-medium">Instant catalog browsing across all verticals</p>
-          </div>
-        </div>
+  const selectedCat = categories.find((c) => c.id === selectedCategory);
+  const isAnimeMode = selectedCat?.type === "jikan";
 
-        <div className="flex gap-2 overflow-x-auto pb-1 w-full md:w-auto custom-scrollbar no-scrollbar">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                selectedCategory === cat.id
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-105"
-                  : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
+  return (
+    <div className="min-h-screen bg-v-movies-base text-white">
+      {/* STICKY CATEGORIES HEADER — uses Section so it aligns with grid */}
+      <div className="sticky top-20 z-30 bg-v-movies-base/95 backdrop-blur-2xl border-b border-white/10">
+        <Section as="div" className="py-sp-2 flex flex-col md:flex-row justify-between items-center gap-sp-2">
+          <div className="flex items-center gap-sp-2">
+            <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+              <Compass size={20} />
+            </div>
+            <div>
+              <h1 className="text-section font-display">
+                Explore Universe
+              </h1>
+              <p className="text-meta text-gray-400 font-medium">Instant catalog browsing across all verticals</p>
+            </div>
+          </div>
+
+          <div className="flex gap-sp-1 overflow-x-auto pb-1 w-full md:w-auto custom-scrollbar no-scrollbar flex-wrap">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-5 py-2 rounded-full text-meta font-bold whitespace-nowrap transition-all ${
+                  selectedCategory === cat.id
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-105"
+                    : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </Section>
       </div>
 
-      {/* UNIFIED MOVIE GRID USING STANDARDIZED MOVIECARD */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-        {movies.map((movie, index) => (
-          <div key={`${movie.id || movie.title}-${index}`} className="flex justify-center">
+      {/* EXPLORE GRID — canonical grid replacing the misaligned justify-between row */}
+      <Section as="div" className="pt-sp-4 pb-sp-6">
+        {/* Grid: uniform gap-sp-3, fills 1920px viewport at xl:grid-cols-6 */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-sp-3">
+          {movies.map((movie, index) => (
             <MovieCard
+              key={`${movie.id || movie.title}-${index}`}
               movie={movie}
               onMovieClick={setSelectedMovie}
-              isAnime={selectedCategory === "anime" || movie.isJikan}
+              isAnime={isAnimeMode || movie.isJikan}
+              vertical={isAnimeMode ? "anime" : "movies"}
+              className="w-full"
             />
+          ))}
+        </div>
+
+        {/* Loading indicator — shown inline in the grid region, never floated */}
+        {loading && (
+          <div className="flex justify-center py-sp-4">
+            <Loader2 size={28} className="animate-spin text-blue-500" />
           </div>
-        ))}
-      </div>
+        )}
 
-      {/* LOAD MORE BUTTON */}
-      <div className="mt-16 flex justify-center">
-        <button
-          disabled={loading}
-          onClick={() => setPage((prev) => prev + 1)}
-          className="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-8 py-3 rounded-full font-bold text-sm flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50 shadow-xl"
-        >
-          {loading ? <Loader2 size={18} className="animate-spin text-blue-500" /> : "Load More Titles"}
-        </button>
-      </div>
+        {/* LOAD MORE */}
+        {!loading && (
+          <div className="mt-sp-5 flex justify-center">
+            <button
+              onClick={() => setPage((prev) => prev + 1)}
+              className="bg-white/10 hover:bg-white/20 border border-white/15 text-white px-8 py-3 rounded-full font-bold text-sm flex items-center gap-sp-1 transition-all active:scale-95 shadow-xl"
+            >
+              Load More Titles
+            </button>
+          </div>
+        )}
+      </Section>
 
-      {/* STANDARDIZED MEDIA DOSSIER MODAL */}
+      {/* MODAL */}
       {selectedMovie && (
         <MovieModal
           movie={selectedMovie}

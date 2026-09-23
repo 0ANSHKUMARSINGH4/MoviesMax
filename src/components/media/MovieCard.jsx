@@ -4,8 +4,9 @@ import { Play, Plus, Check, ThumbsUp, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { GlobalContext } from "../../context/GlobalState";
 import { normalizeMedia } from "../../utils/mediaUtils";
+import SmartImage from "./SmartImage";
 
-const MovieCard = ({ movie, onMovieClick, isAnime = false }) => {
+const MovieCard = ({ movie, onMovieClick, isAnime = false, vertical = "movies" }) => {
   const { watchlist, toggleWatchlist, favorites, toggleFavorite } = useContext(GlobalContext);
 
   const item = normalizeMedia(movie);
@@ -77,14 +78,18 @@ const MovieCard = ({ movie, onMovieClick, isAnime = false }) => {
           className="absolute inset-0 bg-blue-accent/30 blur-2xl z-0 rounded-2xl pointer-events-none will-change-opacity" 
         />
 
-        {/* Poster Image */}
-        <motion.img
-          variants={imageVariants}
-          src={item.poster_path}
-          alt={item.title}
-          loading="lazy"
-          className="w-full h-full object-cover relative z-10"
-        />
+        {/* Poster Image — routed through SmartImage for shimmer + fallback */}
+        <motion.div variants={imageVariants} className="absolute inset-0 z-10">
+          <SmartImage
+            src={item.poster_path}
+            alt=""
+            title={item.title}
+            vertical={vertical}
+            decorative
+            className="w-full h-full"
+            imgClassName="object-cover"
+          />
+        </motion.div>
 
         {/* Ambient base vignette */}
         <motion.div 

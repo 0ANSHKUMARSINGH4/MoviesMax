@@ -4,6 +4,8 @@ import { Play, Plus, Check, ChevronLeft, ChevronRight, Star, Sparkles } from "lu
 import { motion } from "framer-motion";
 import { GlobalContext } from "../../context/GlobalState";
 import { TOP10_DATA } from "../../utils/movieData";
+import SmartImage from "./SmartImage";
+import Section from "../layout/Section";
 
 const Top10Row = ({
   vertical = "movies",
@@ -58,9 +60,9 @@ const Top10Row = ({
   };
 
   return (
-    <section className="relative py-8 px-4 sm:px-8 md:px-12 group/top10 select-none">
+    <Section as="section" className="relative py-sp-4 group/top10 select-none">
       {/* SECTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-sp-3 gap-sp-1">
         <div className="flex items-center gap-3">
           <div className={`w-1.5 h-6 rounded-full ${verticalTheme.accent}`} />
           <div>
@@ -132,11 +134,14 @@ const Top10Row = ({
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 className="relative z-10 w-36 sm:w-44 md:w-52 aspect-[2/3] rounded-2xl overflow-hidden bg-[#0c0d14] border border-white/10 group-hover/item:border-white/30 shadow-2xl will-change-transform"
               >
-                <img
+                <SmartImage
                   src={item.poster_path}
-                  alt={item.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/item:scale-105"
+                  alt=""
+                  title={item.title}
+                  vertical={vertical}
+                  decorative
+                  className="absolute inset-0 w-full h-full"
+                  imgClassName="object-cover transition-transform duration-500 group-hover/item:scale-105"
                 />
 
                 {/* Gradient vignette */}
@@ -197,7 +202,7 @@ const Top10Row = ({
           );
         })}
       </div>
-    </section>
+    </Section>
   );
 };
 

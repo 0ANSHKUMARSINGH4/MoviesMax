@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchMoviesByCategory } from "../../utils/movieApi";
 import { CATEGORY_CATALOG } from "../../utils/movieData";
 import MovieCard from "./MovieCard";
+import Section from "../layout/Section";
 
 const MovieRow = ({
   title,
@@ -42,7 +43,6 @@ const MovieRow = ({
               }));
             }
           } catch (e) {
-            // Instant fallback to curated anime catalog on network/rate-limit error
             results = CATEGORY_CATALOG["currently airing simulcasts"];
           }
         } else {
@@ -88,22 +88,22 @@ const MovieRow = ({
   }[vertical] || (isJikan ? "bg-orange-600 shadow-[0_0_10px_#ea580c]" : "bg-blue-600 shadow-[0_0_10px_#2563eb]");
 
   return (
-    <section className="relative py-4 px-4 sm:px-8 md:px-12 group/row select-none">
+    <Section as="section" className="relative py-sp-4 group/row select-none">
       {/* SECTION HEADER */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2.5">
+      <div className="flex items-center justify-between mb-sp-3">
+        <div className="flex items-center gap-sp-1">
           <div className={`w-1 h-5 rounded-full ${accentColor}`} />
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white font-display flex items-center gap-2">
+          <h2 className="text-section font-display flex items-center gap-sp-1">
             {title}
             {isJikan && (
-              <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full">
+              <span className="text-meta font-black uppercase tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full">
                 Simulcast
               </span>
             )}
           </h2>
         </div>
 
-        <span className="text-xs text-gray-400 hover:text-white font-semibold cursor-pointer transition-colors hidden sm:inline">
+        <span className="text-meta text-gray-400 hover:text-white font-semibold cursor-pointer transition-colors hidden sm:inline">
           Explore All →
         </span>
       </div>
@@ -111,7 +111,7 @@ const MovieRow = ({
       {/* FULL-HEIGHT EDGE CAROUSEL HANDLES */}
       <button
         onClick={() => handleScroll("left")}
-        className="hidden md:flex absolute left-2 md:left-4 top-14 bottom-8 w-12 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-r border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
+        className="hidden md:flex absolute left-0 top-14 bottom-8 w-10 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-r border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
         title="Scroll Left"
       >
         <ChevronLeft size={28} />
@@ -119,7 +119,7 @@ const MovieRow = ({
 
       <button
         onClick={() => handleScroll("right")}
-        className="hidden md:flex absolute right-2 md:right-4 top-14 bottom-8 w-12 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-l border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
+        className="hidden md:flex absolute right-0 top-14 bottom-8 w-10 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-l border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
         title="Scroll Right"
       >
         <ChevronRight size={28} />
@@ -128,7 +128,7 @@ const MovieRow = ({
       {/* HORIZONTAL CAROUSEL CONTAINER */}
       <div
         ref={rowRef}
-        className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 custom-scrollbar no-scrollbar scroll-smooth"
+        className="flex gap-sp-3 overflow-x-auto pb-sp-2 pt-1 custom-scrollbar no-scrollbar scroll-smooth"
       >
         {movies.map((movie, index) => (
           <MovieCard
@@ -136,10 +136,11 @@ const MovieRow = ({
             movie={movie}
             onMovieClick={onMovieClick}
             isAnime={isJikan}
+            vertical={vertical}
           />
         ))}
       </div>
-    </section>
+    </Section>
   );
 };
 

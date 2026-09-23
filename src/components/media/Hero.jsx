@@ -6,6 +6,7 @@ import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { HERO_DATA } from "../../utils/movieData";
+import SmartImage from "./SmartImage";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -95,10 +96,14 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
             <SwiperSlide key={item.id || index} className="relative h-full w-full group/hero">
               {/* 1. CINEMATIC BACKDROP IMAGE WITH KEN BURNS EFFECT */}
               <div className="absolute inset-0 overflow-hidden">
-                <img
+                <SmartImage
                   src={item.backdrop_path}
-                  alt={item.title}
-                  className="w-full h-full object-cover object-center animate-kenburns"
+                  alt=""
+                  title={item.title}
+                  vertical={vertical}
+                  decorative
+                  className="absolute inset-0 w-full h-full"
+                  imgClassName="animate-kenburns object-cover object-center"
                 />
 
                 {/* MULTI-DIRECTIONAL AMBIENT GRADIENTS (Zero harsh cutoffs) */}
@@ -107,7 +112,7 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
                 <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/85 to-transparent" />
               </div>
 
-              {/* 2. HERO CONTENT PANEL (Pinterest / Figma Precision Layout) */}
+              {/* 2. HERO CONTENT PANEL — container-mx keeps left edge on the design grid */}
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -119,7 +124,7 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
                     transition: { staggerChildren: 0.12, delayChildren: 0.2 }
                   }
                 }}
-                className="absolute bottom-16 sm:bottom-24 left-0 w-full px-6 sm:px-12 md:px-16 z-20"
+                className="absolute bottom-16 sm:bottom-24 left-0 w-full container-mx z-20"
               >
                 <div className="max-w-2xl sm:max-w-3xl space-y-4 md:space-y-5">
                   {/* Category Kicker & Sentiment Analysis Pill */}

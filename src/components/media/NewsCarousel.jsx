@@ -2,6 +2,8 @@ import { useRef } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { Newspaper, ChevronRight, Clock, ArrowRight } from "lucide-react";
+import SmartImage from "./SmartImage";
+import Section from "../layout/Section";
 
 const MOCK_NEWS = {
   movies: [
@@ -48,12 +50,12 @@ const NewsCarousel = ({ vertical = "movies", accentColor = "blue" }) => {
   const badgeBg = accentClass.split(" ")[0];
 
   return (
-    <section className="py-8 px-4 sm:px-8 md:px-12 select-none">
+    <Section as="section" className="py-sp-5 select-none">
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-sp-3">
         <div className="flex items-center gap-3">
           <div className={`w-1.5 h-6 rounded-full ${badgeBg} shadow-lg`} />
-          <h2 className="text-xl md:text-2xl font-black tracking-tight text-white font-display uppercase flex items-center gap-2">
+          <h2 className="text-section font-display uppercase flex items-center gap-sp-1">
             <Newspaper size={20} /> Latest Updates
           </h2>
         </div>
@@ -78,11 +80,15 @@ const NewsCarousel = ({ vertical = "movies", accentColor = "blue" }) => {
             className={`group relative flex-none w-[85vw] sm:w-80 md:w-96 rounded-2xl overflow-hidden bg-[#0f1118] border border-white/10 cursor-pointer transition-all duration-300 hover:shadow-2xl ${accentClass.split(' ')[2]}`}
           >
             {/* Image */}
-            <div className="w-full h-48 sm:h-56 overflow-hidden bg-black relative">
-              <img
+            <div className="w-full h-48 sm:h-56 overflow-hidden relative">
+              <SmartImage
                 src={item.image}
-                alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                alt=""
+                title={item.title}
+                vertical={vertical}
+                decorative
+                className="absolute inset-0 w-full h-full"
+                imgClassName={`object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100`}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0f1118] via-transparent to-transparent" />
               
@@ -109,7 +115,7 @@ const NewsCarousel = ({ vertical = "movies", accentColor = "blue" }) => {
           </motion.div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 };
 

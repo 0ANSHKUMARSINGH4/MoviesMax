@@ -6,6 +6,7 @@ import axios from "axios";
 import { GlobalContext } from "../../context/GlobalState";
 import { fetchDetailedMovieInfo } from "../../utils/movieApi";
 import { normalizeMedia } from "../../utils/mediaUtils";
+import SmartImage from "../media/SmartImage";
 
 const MovieModal = ({ movie, onClose }) => {
   const { API_KEY, BASE_URL, watchlist, toggleWatchlist, favorites, toggleFavorite } = useContext(GlobalContext);
@@ -120,12 +121,11 @@ const MovieModal = ({ movie, onClose }) => {
       ? { label: "Great!", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" }
       : { label: "Good", color: "bg-amber-500/20 text-amber-400 border-amber-500/30" };
 
+  // Only keep the real backdrop; dead Unsplash hashes are removed
   const sampleStills = [
     media.backdrop_path,
-    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=700",
-    "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=700",
-    "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=700",
-  ];
+    media.poster_path,
+  ].filter(Boolean);
 
   return (
     <AnimatePresence>
@@ -173,10 +173,14 @@ const MovieModal = ({ movie, onClose }) => {
               />
             ) : (
               <div className="w-full h-full relative">
-                <img
+                <SmartImage
                   src={media.backdrop_path}
-                  className="w-full h-full object-cover opacity-50"
-                  alt={media.title}
+                  alt=""
+                  title={media.title}
+                  vertical={media.isJikan ? "anime" : "movies"}
+                  decorative
+                  className="absolute inset-0 w-full h-full"
+                  imgClassName="object-cover opacity-50"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c11] via-transparent to-black/60" />
 
@@ -355,11 +359,15 @@ const MovieModal = ({ movie, onClose }) => {
 
                 <div className="flex items-center gap-4 py-2">
                   {/* Vinyl Album Cover */}
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-black shadow-lg flex-shrink-0">
-                    <img
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-lg flex-shrink-0">
+                    <SmartImage
                       src={media.poster_path}
-                      alt="OST Album Art"
-                      className="w-full h-full object-cover"
+                      alt=""
+                      title={media.title}
+                      vertical={media.isJikan ? "anime" : "movies"}
+                      decorative
+                      className="w-full h-full"
+                      imgClassName="object-cover"
                     />
                   </div>
 
@@ -392,12 +400,16 @@ const MovieModal = ({ movie, onClose }) => {
                 {sampleStills.map((still, idx) => (
                   <div
                     key={idx}
-                    className="aspect-video rounded-xl overflow-hidden bg-black/60 border border-white/10 group cursor-pointer"
+                    className="aspect-video rounded-xl overflow-hidden border border-white/10 group cursor-pointer"
                   >
-                    <img
+                    <SmartImage
                       src={still}
-                      alt={`Still ${idx + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      alt=""
+                      title={`${media.title} still ${idx + 1}`}
+                      vertical={media.isJikan ? "anime" : "movies"}
+                      decorative
+                      className="w-full h-full"
+                      imgClassName="object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                   </div>
                 ))}
@@ -412,11 +424,15 @@ const MovieModal = ({ movie, onClose }) => {
               <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
                 {cast.map((actor, idx) => (
                   <div key={actor.id || idx} className="flex-none flex items-center gap-2.5 pr-2">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white/10 border border-white/15 flex-shrink-0">
-                      <img
-                        src={actor.profile_path || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=120"}
-                        alt={actor.name}
-                        className="w-full h-full object-cover"
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-white/15 flex-shrink-0">
+                      <SmartImage
+                        src={actor.profile_path}
+                        alt=""
+                        title={actor.name}
+                        vertical={media.isJikan ? "anime" : "movies"}
+                        decorative
+                        className="w-full h-full"
+                        imgClassName="object-cover"
                       />
                     </div>
                     <div>

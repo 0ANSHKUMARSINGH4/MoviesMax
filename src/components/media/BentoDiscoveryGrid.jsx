@@ -2,6 +2,8 @@ import { BENTO_DATA } from "../../utils/movieData";
 import { Sparkles, Play, Disc, ArrowUpRight, Award, Flame } from "lucide-react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
+import SmartImage from "./SmartImage";
+import Section from "../layout/Section";
 
 const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
   const data = BENTO_DATA[vertical] || BENTO_DATA.movies;
@@ -45,9 +47,9 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
   };
 
   return (
-    <section className="py-10 px-4 sm:px-8 md:px-12 max-w-7xl mx-auto select-none">
+    <Section as="section" className="py-sp-5 select-none">
       {/* SECTION HEADER (FIGMA STYLE MINIMALIST KICKER) */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-sp-3 gap-sp-1">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${verticalTheme.pillBg}`}>
@@ -75,10 +77,14 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
         >
           {/* Background Image */}
           <div className="absolute inset-0">
-            <img
+            <SmartImage
               src={data.spotlight.image}
-              alt={data.spotlight.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              alt=""
+              title={data.spotlight.title}
+              vertical={vertical}
+              decorative
+              className="absolute inset-0 w-full h-full"
+              imgClassName="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#08090e] via-[#08090e]/60 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#08090e]/80 via-transparent to-transparent" />
@@ -119,10 +125,14 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
           onClick={() => onMovieClick && onMovieClick({ title: data.tallFeature.title, poster_path: data.tallFeature.image, overview: data.tallFeature.subtitle })}
         >
           <div className="absolute inset-0">
-            <img
+            <SmartImage
               src={data.tallFeature.image}
-              alt={data.tallFeature.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              alt=""
+              title={data.tallFeature.title}
+              vertical={vertical}
+              decorative
+              className="absolute inset-0 w-full h-full"
+              imgClassName="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
           </div>
@@ -182,11 +192,15 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl overflow-hidden bg-black/60 border border-white/15 flex-shrink-0 relative group-hover:rotate-6 transition-transform">
-              <img
+            <div className="w-14 h-14 rounded-2xl overflow-hidden border border-white/15 flex-shrink-0 group-hover:rotate-6 transition-transform">
+              <SmartImage
                 src={data.soundtrackCard.image}
-                alt={data.soundtrackCard.track}
-                className="w-full h-full object-cover"
+                alt=""
+                title={data.soundtrackCard.track}
+                vertical={vertical}
+                decorative
+                className="w-full h-full"
+                imgClassName="object-cover"
               />
             </div>
             <div className="min-w-0">
@@ -200,7 +214,7 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </Section>
   );
 };
 

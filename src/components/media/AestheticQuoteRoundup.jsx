@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Quote, Sparkles } from "lucide-react";
 import { VERTICAL_QUOTES } from "../../utils/movieData";
+import Section from "../layout/Section";
 
 const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
   const containerRef = useRef(null);
@@ -35,13 +36,13 @@ const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
   };
 
   return (
-    <section className="relative py-12 px-4 sm:px-8 md:px-12 select-none overflow-hidden max-w-7xl mx-auto">
+    <Section as="section" className="relative py-sp-5 select-none overflow-hidden">
       {/* SECTION HEADER */}
       <div className="flex flex-col items-center justify-center text-center mb-8 space-y-2 relative z-20">
         <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest ${verticalTheme.pill}`}>
           <Sparkles size={14} /> Iconic Dialogue & Cultural Resonance
         </div>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-white italic opacity-90" style={{ fontFamily: "serif" }}>
+        <h2 className="text-section font-display text-white italic opacity-90" style={{ fontFamily: "serif" }}>
           Words that Resonate Through Cinema
         </h2>
       </div>
@@ -102,7 +103,7 @@ const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
           </motion.div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 };
 
