@@ -16,7 +16,19 @@ const LIVE_TOURNAMENTS = [
     score: "2 - 1",
     viewers: "1.4M Watching",
     status: "LIVE",
-    image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/League_of_Legends_World_Championship_2015_-_Finals.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/League_of_Legends_World_Championship_2015_-_Finals.jpg",
+    overview: "The most anticipated match in League of Legends history. Two Korean titans clash on the international stage for the ultimate prize. Will the reigning champions defend their title or will a new dynasty begin?",
+    vertical: "esports",
+    esports_data: {
+      tournament: "League of Legends Worlds 2026",
+      stage: "Grand Finals",
+      team1: { name: "T1", roster: ["Zeus", "Oner", "Faker", "Gumayusi", "Keria"] },
+      team2: { name: "Gen.G", roster: ["Kiin", "Canyon", "Chovy", "Peyz", "Lehends"] },
+      series_format: "Best of 5",
+      map_pool: "Summoner's Rift",
+      prize_pool: "$2,250,000",
+      streaming_platform: "Twitch / YouTube 4K"
+    }
   },
   {
     id: "tourney-2",
@@ -26,7 +38,19 @@ const LIVE_TOURNAMENTS = [
     score: "Map 3: 11 - 9",
     viewers: "890K Watching",
     status: "LIVE",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Valorant_logo_-_pink_color_version.svg/1024px-Valorant_logo_-_pink_color_version.svg.png"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Valorant_logo_-_pink_color_version.svg/1024px-Valorant_logo_-_pink_color_version.svg.png",
+    overview: "The VCT Champions Seoul reaches its climax. Sentinels and Fnatic push each other to the absolute limit on Map 3. Every single round could determine who lifts the trophy.",
+    vertical: "esports",
+    esports_data: {
+      tournament: "VCT Champions Seoul 2026",
+      stage: "Semi-Finals",
+      team1: { name: "Sentinels", roster: ["zekken", "Sacy", "TenZ", "johnqt", "Zellsis"] },
+      team2: { name: "Fnatic", roster: ["Boaster", "Derke", "Alfajer", "Leo", "Chronicle"] },
+      series_format: "Best of 3",
+      map_pool: "Ascent, Lotus, Split",
+      prize_pool: "$1,000,000",
+      streaming_platform: "Twitch / YouTube"
+    }
   },
   {
     id: "tourney-3",
@@ -36,7 +60,19 @@ const LIVE_TOURNAMENTS = [
     score: "14 - 12",
     viewers: "650K Watching",
     status: "LIVE",
-    image: "https://upload.wikimedia.org/wikipedia/commons/2/29/ESL_One_Cologne_2015_-_Final.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/2/29/ESL_One_Cologne_2015_-_Final.jpg",
+    overview: "A fierce battle in the IEM Major Grand Final between NAVI and FaZe Clan. The tactical depth of Counter-Strike 2 is on full display. The crowd roars as the match heads into double overtime.",
+    vertical: "esports",
+    esports_data: {
+      tournament: "IEM Major 2026",
+      stage: "Grand Final",
+      team1: { name: "NAVI", roster: ["Aleksib", "iM", "b1t", "jL", "w0nderful"] },
+      team2: { name: "FaZe Clan", roster: ["karrigan", "rain", "broky", "ropz", "frozen"] },
+      series_format: "Best of 5",
+      map_pool: "Mirage, Nuke, Inferno, Ancient, Anubis",
+      prize_pool: "$1,250,000",
+      streaming_platform: "Twitch / ESL TV"
+    }
   }
 ];
 
@@ -75,7 +111,18 @@ const Esports = () => {
               onClick={() => setSelectedMovie({
                 title: "League of Legends Worlds Grand Finals 2026",
                 backdrop_path: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1925",
-                overview: "Official Riot Games 4K broadcast stream with real-time kill gold graphs and pro commentary."
+                overview: "Official Riot Games 4K broadcast stream with real-time kill gold graphs and pro commentary. Witness Faker and T1 defend their dynasty against the rising challengers in a sold-out stadium. The ultimate battle for the Summoner's Cup.",
+                vertical: "esports",
+                esports_data: {
+                  tournament: "League of Legends Worlds 2026",
+                  stage: "Grand Finals",
+                  team1: { name: "T1", roster: ["Zeus", "Oner", "Faker", "Gumayusi", "Keria"] },
+                  team2: { name: "Gen.G", roster: ["Kiin", "Canyon", "Chovy", "Peyz", "Lehends"] },
+                  series_format: "Best of 5",
+                  map_pool: "Summoner's Rift",
+                  prize_pool: "$2,250,000",
+                  streaming_platform: "Twitch / YouTube 4K"
+                }
               })}
               className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white px-8 py-3.5 rounded-2xl font-black text-sm transition-all hover:scale-105 shadow-xl shadow-pink-600/30 active:scale-95"
             >
@@ -97,7 +144,7 @@ const Esports = () => {
           {LIVE_TOURNAMENTS.map((t) => (
             <div
               key={t.id}
-              onClick={() => setSelectedMovie({ title: `${t.game} - ${t.match}`, backdrop_path: t.image, overview: `${t.event} live broadcast` })}
+              onClick={() => setSelectedMovie({ title: `${t.game} - ${t.match}`, backdrop_path: t.image, overview: t.overview, vertical: t.vertical, esports_data: t.esports_data })}
               className="p-sp-2 rounded-2xl bg-v-esports-surface/90 border border-v-esports-border hover:border-v-esports-accent/50 backdrop-blur-xl shadow-card transition-all hover:-translate-y-1 cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-3">

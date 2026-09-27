@@ -93,7 +93,7 @@ const NewsCarousel = ({ vertical = "movies", accentColor = "blue" }) => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0f1118] via-transparent to-transparent" />
               
               {/* Category Badge */}
-              <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-md ${badgeBg} text-white text-[10px] font-black uppercase tracking-wider shadow-md`}>
+              <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-md ${badgeBg} text-white text-meta font-black uppercase tracking-wider shadow-md`}>
                 {item.category}
               </div>
             </div>

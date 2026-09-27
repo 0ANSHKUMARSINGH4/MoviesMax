@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Tv, Sparkles, Trophy, Gamepad2, ArrowRight } from "lucide-react";
+import SmartImage from "../components/media/SmartImage";
 
 const VERTICALS = [
   {
@@ -62,7 +63,7 @@ const Home = () => {
   const [activeVertical, setActiveVertical] = useState(VERTICALS[0]);
 
   return (
-    <div className="relative min-h-screen bg-dark-main text-gray-200 overflow-hidden flex flex-col justify-center">
+    <div className="relative pt-28 pb-12 bg-dark-main text-gray-200 overflow-hidden flex flex-col justify-center">
       {/* DYNAMIC AMBIENT BACKGROUND */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -73,17 +74,21 @@ const Home = () => {
           transition={{ duration: 1.2, ease: "easeInOut" }}
           className="absolute inset-0 z-0"
         >
-          <img
+          <SmartImage
             src={activeVertical.bgImage}
-            alt={activeVertical.title}
-            className="w-full h-full object-cover"
+            alt=""
+            title={activeVertical.title}
+            vertical={activeVertical.id}
+            className="absolute inset-0 w-full h-full"
+            imgClassName="object-cover"
+            decorative
           />
           <div className={`absolute inset-0 bg-gradient-to-t ${activeVertical.color} to-transparent mix-blend-multiply opacity-50`} />
           <div className="absolute inset-0 bg-gradient-to-b from-dark-main via-dark-main/60 to-dark-main opacity-90" />
         </motion.div>
       </AnimatePresence>
 
-      <div className="relative z-10 container-mx py-20 flex flex-col items-center">
+      <div className="relative z-10 container-mx flex flex-col items-center">
         {/* HEADER */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -122,10 +127,14 @@ const Home = () => {
               >
                 {/* Background Image (Parallax) */}
                 <div className="absolute inset-0">
-                  <img
+                  <SmartImage
                     src={vertical.bgImage}
-                    alt={vertical.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-40 group-hover:opacity-80"
+                    alt=""
+                    title={vertical.title}
+                    vertical={vertical.id}
+                    className="absolute inset-0 w-full h-full"
+                    imgClassName="object-cover transition-transform duration-700 group-hover:scale-110 opacity-40 group-hover:opacity-80"
+                    decorative
                   />
                   <div className={`absolute inset-0 bg-gradient-to-t ${vertical.color} to-transparent mix-blend-overlay opacity-60 group-hover:opacity-100 transition-opacity`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />

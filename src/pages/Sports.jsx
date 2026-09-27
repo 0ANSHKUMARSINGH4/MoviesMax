@@ -17,7 +17,19 @@ const LIVE_MATCHES = [
     time: "78'",
     status: "LIVE",
     odds: "Draw 3.10",
-    image: "https://images.unsplash.com/photo-1518605368461-1ee7c532066d?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1518605368461-1ee7c532066d?q=80&w=600",
+    overview: "Real Madrid and Manchester City lock horns in a thrilling Champions League encounter. The tactical battle is intense as both teams fight for European supremacy. Who will break the deadlock in the final minutes?",
+    vertical: "sports",
+    sports_data: {
+      competition: "UEFA Champions League 2026",
+      stage: "Semi-Final",
+      venue: "Santiago Bernabéu, Madrid",
+      date_time: "May 5, 2026 - 21:00 CET",
+      team1: { name: "Real Madrid" },
+      team2: { name: "Manchester City" },
+      score: "2 - 2 (LIVE 78')",
+      broadcaster: "TNT Sports / CBS Sports"
+    }
   },
   {
     id: "match-2",
@@ -28,7 +40,19 @@ const LIVE_MATCHES = [
     time: "Q4 2:15",
     status: "LIVE",
     odds: "BOS -3.5",
-    image: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Stephen_Curry_Shooting.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Stephen_Curry_Shooting.jpg",
+    overview: "The Boston Celtics take on the L.A. Lakers in a classic NBA Finals showdown. It's a closely contested game entering the final minutes of the 4th quarter. Every possession counts as history is on the line.",
+    vertical: "sports",
+    sports_data: {
+      competition: "NBA Finals 2026",
+      stage: "Game 7",
+      venue: "TD Garden, Boston",
+      date_time: "June 18, 2026 - 20:30 EST",
+      team1: { name: "Boston Celtics" },
+      team2: { name: "L.A. Lakers" },
+      score: "108 - 104 (LIVE Q4 2:15)",
+      broadcaster: "ABC / ESPN"
+    }
   },
   {
     id: "match-3",
@@ -39,7 +63,19 @@ const LIVE_MATCHES = [
     time: "Interval 1.2s",
     status: "LIVE",
     odds: "Red Bull",
-    image: "https://upload.wikimedia.org/wikipedia/commons/3/33/F1_2019_Silverstone_Grand_Prix_%2848288301772%29.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/3/33/F1_2019_Silverstone_Grand_Prix_%2848288301772%29.jpg",
+    overview: "Max Verstappen and Lewis Hamilton engage in a wheel-to-wheel battle at Silverstone. With only a few laps remaining, the tension is palpable. The strategy calls from the pitwall will decide the Grand Prix winner.",
+    vertical: "sports",
+    sports_data: {
+      competition: "Formula 1 2026",
+      stage: "British Grand Prix",
+      venue: "Silverstone Circuit",
+      date_time: "July 12, 2026 - 15:00 BST",
+      team1: { name: "Max Verstappen" },
+      team2: { name: "Lewis Hamilton" },
+      score: "Lap 48/52 (Interval 1.2s)",
+      broadcaster: "Sky Sports F1"
+    }
   }
 ];
 
@@ -78,7 +114,18 @@ const Sports = () => {
               onClick={() => setSelectedMovie({
                 title: "UEFA Champions League Final 2026",
                 backdrop_path: "https://images.unsplash.com/photo-1518605368461-1ee7c532066d?q=80&w=1925",
-                overview: "Live 4K Ultra HD coverage with real-time match analytics and multi-cam tactical views."
+                overview: "Live 4K Ultra HD coverage with real-time match analytics and multi-cam tactical views. Real Madrid battles Manchester City for European supremacy. Watch the most anticipated match of the year live.",
+                vertical: "sports",
+                sports_data: {
+                  competition: "UEFA Champions League 2026",
+                  stage: "Final",
+                  venue: "Wembley Stadium, London",
+                  date_time: "May 30, 2026 - 21:00 CET",
+                  team1: { name: "Real Madrid" },
+                  team2: { name: "Manchester City" },
+                  score: "0 - 0 (Pre-Match)",
+                  broadcaster: "Global Feed 4K"
+                }
               })}
               className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black px-8 py-3.5 rounded-2xl font-black text-sm transition-all hover:scale-105 shadow-xl shadow-emerald-500/30 active:scale-95"
             >
@@ -97,7 +144,7 @@ const Sports = () => {
           {LIVE_MATCHES.map((match) => (
             <div
               key={match.id}
-              onClick={() => setSelectedMovie({ title: `${match.teamA} vs ${match.teamB}`, backdrop_path: match.image, overview: `${match.tournament} live match coverage` })}
+              onClick={() => setSelectedMovie({ title: `${match.teamA} vs ${match.teamB}`, backdrop_path: match.image, overview: match.overview, vertical: match.vertical, sports_data: match.sports_data })}
               className="p-sp-2 rounded-2xl bg-v-sports-surface/90 border border-v-sports-border hover:border-v-sports-accent/50 backdrop-blur-xl shadow-card transition-all hover:-translate-y-1 cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-3">

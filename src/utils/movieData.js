@@ -11,12 +11,16 @@ export const HERO_DATA = {
   movies: [
     {
       id: "hero-m-dune2",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Dune: Part Two",
       original_title: "Dune: Part Two",
-      overview: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe.",
+      overview: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe. He must prevent a terrible future that only he can foresee.",
       backdrop_path: "https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtecsmEZgn9c2.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/1pdfLvkbY9ohJlCjQH2JGqq99Vl.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.8,
       runtime: "2h 46m",
       genres: ["Sci-Fi", "Adventure", "Drama"],
@@ -27,12 +31,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-m-oppenheimer",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Oppenheimer",
       original_title: "Oppenheimer",
-      overview: "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb. Winner of 7 Academy Awards including Best Picture.",
+      overview: "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb. Winner of 7 Academy Awards including Best Picture. This sprawling epic delves into the moral complexities of his creation and the profound impact it left on global history.",
       backdrop_path: "https://image.tmdb.org/t/p/original/fm6KqXpk3M2HVveHwCrBRoOoA0i.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
       release_date: "2023",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.9,
       runtime: "3h 00m",
       genres: ["Biography", "Drama", "History"],
@@ -43,12 +51,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-m-spiderverse",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Spider-Man: Across the Spider-Verse",
       original_title: "Spider-Man: Across the Spider-Verse",
-      overview: "Miles Morales catapults across the Multiverse, where he encounters a team of Spider-People charged with protecting its very existence.",
+      overview: "Miles Morales catapults across the Multiverse, where he encounters a team of Spider-People charged with protecting its very existence. When the heroes clash on how to handle a new threat, Miles finds himself pitted against the other Spiders. He must redefine what it means to be a hero so he can save the people he loves most.",
       backdrop_path: "https://image.tmdb.org/t/p/original/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
       release_date: "2023",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.7,
       runtime: "2h 20m",
       genres: ["Animation", "Action", "Sci-Fi"],
@@ -59,12 +71,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-m-interstellar",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Interstellar",
       original_title: "Interstellar",
-      overview: "When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.",
+      overview: "When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans. Traversing through a newly discovered wormhole, the crew faces the immense challenge of relativity and isolation. Their mission becomes a desperate race against time to ensure the survival of humanity.",
       backdrop_path: "https://image.tmdb.org/t/p/original/xJHokMbljvjEVAql3l5I6ZfYS9.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
       release_date: "2014",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.7,
       runtime: "2h 49m",
       genres: ["Sci-Fi", "Drama", "Adventure"],
@@ -78,12 +94,16 @@ export const HERO_DATA = {
   series: [
     {
       id: "hero-s-hotd",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "House of the Dragon",
       original_title: "House of the Dragon",
-      overview: "An internal succession war within House Targaryen at the height of its power, 172 years before the birth of Daenerys Targaryen. Fire, blood, and dragons collide for the Iron Throne.",
+      overview: "An internal succession war within House Targaryen at the height of its power, 172 years before the birth of Daenerys Targaryen. Fire, blood, and dragons collide for the Iron Throne. As former allies turn into bitter enemies, the realm is torn apart by conflicting claims and devastating dragonfire.",
       backdrop_path: "https://image.tmdb.org/t/p/original/etj5CuMuam3guZq0AIpsaj2NIvs.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/1X4h40fcBaqcg9cgEVd0KVHR3NT.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.6,
       runtime: "Season 2 Now Streaming",
       genres: ["Fantasy", "Action", "Drama"],
@@ -94,12 +114,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-s-severance",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Severance",
       original_title: "Severance",
-      overview: "Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives. When a mysterious colleague appears outside of work, it begins a journey to discover the truth.",
+      overview: "Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives. When a mysterious colleague appears outside of work, it begins a journey to discover the truth. This chilling workplace thriller slowly unravels the dark corporate secrets hidden within Lumon Industries.",
       backdrop_path: "https://image.tmdb.org/t/p/original/7KsqfXjD1o7X25c2759U6rM5Y4Y.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/6n6vHloYV0P7L32YvIfP1LgGjW3.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.7,
       runtime: "Season 2 Coming Soon",
       genres: ["Sci-Fi", "Mystery", "Thriller"],
@@ -110,12 +134,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-s-shogun",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Shōgun",
       original_title: "Shōgun",
-      overview: "When a mysterious European ship is found marooned in a nearby fishing village, Lord Toranaga discovers secrets that could tip the scales of power and devastate his formidable enemies in feudal Japan.",
+      overview: "When a mysterious European ship is found marooned in a nearby fishing village, Lord Toranaga discovers secrets that could tip the scales of power and devastate his formidable enemies in feudal Japan. The unexpected arrival of English pilot John Blackthorne forces an uneasy alliance. Together, they must navigate a treacherous political landscape defined by honor, betrayal, and war.",
       backdrop_path: "https://image.tmdb.org/t/p/original/56v2KjBlU4aAB14sIGTe1T156wD.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/7O4iVfOMQmdCSxhOg1WNzG1AgYT.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.8,
       runtime: "10 Episodes",
       genres: ["Historical", "War", "Drama"],
@@ -126,12 +154,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-s-lastofus",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "The Last of Us",
       original_title: "The Last of Us",
-      overview: "Twenty years after modern civilization has been destroyed, Joel, a hardened survivor, is hired to smuggle Ellie, a 14-year-old girl, out of an oppressive quarantine zone.",
+      overview: "Twenty years after modern civilization has been destroyed, Joel, a hardened survivor, is hired to smuggle Ellie, a 14-year-old girl, out of an oppressive quarantine zone. What starts as a small job soon becomes a brutal, heartbreaking journey across the post-apocalyptic United States. They must learn to rely on each other to survive ruthless factions and terrifying infected.",
       backdrop_path: "https://image.tmdb.org/t/p/original/uDgy6hyPd82kOHh6I95FLtLnj6p.jpg",
       poster_path: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
       release_date: "2023",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.8,
       runtime: "Season 1 Complete",
       genres: ["Post-Apocalyptic", "Drama", "Adventure"],
@@ -145,12 +177,16 @@ export const HERO_DATA = {
   anime: [
     {
       id: "hero-a-sololeveling",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Solo Leveling",
       original_title: "俺だけレベルアップな件",
-      overview: "In a world where hunters must battle deadly monsters to protect humanity, Sung Jinwoo, the weakest of all hunters, is chosen by a mysterious quest log that allows him to level up endlessly.",
+      overview: "In a world where hunters must battle deadly monsters to protect humanity, Sung Jinwoo, the weakest of all hunters, is chosen by a mysterious quest log that allows him to level up endlessly. As he completes increasingly dangerous missions, Jinwoo sheds his former weakness to become an unstoppable force. His newfound powers hide a darker secret that could alter the fate of the hunter world forever.",
       backdrop_path: "https://image.tmdb.org/t/p/original/geYUqF3vO2hZ5Gj6M09F1Y7qQn0.jpg",
       poster_path: "https://cdn.myanimelist.net/images/anime/1730/140683l.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.8,
       runtime: "Season 2 Confirmed",
       genres: ["Action", "Fantasy", "Supernatural"],
@@ -162,12 +198,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-a-frieren",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Frieren: Beyond Journey's End",
       original_title: "葬送のフリーレン",
-      overview: "An elf mage and her companions defeat the Demon King. As decades pass, Frieren reflects on her past journey and embarks on a new voyage to truly understand the hearts of mortals.",
+      overview: "An elf mage and her companions defeat the Demon King. As decades pass, Frieren reflects on her past journey and embarks on a new voyage to truly understand the hearts of mortals. Accompanied by a new generation of adventurers, she retraces the steps of her old party while exploring the fleeting beauty of human lives.",
       backdrop_path: "https://image.tmdb.org/t/p/original/kC6yO9dC1E7zO3Zt3gC9iH7pZ9w.jpg",
       poster_path: "https://cdn.myanimelist.net/images/anime/1015/138006l.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 9.2,
       runtime: "28 Episodes",
       genres: ["Adventure", "Fantasy", "Slice of Life"],
@@ -179,12 +219,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-a-jjk",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Jujutsu Kaisen: Shibuya Incident",
       original_title: "呪術廻戦",
-      overview: "On October 31st, a curtain falls over Shibuya. Sorcerers and curse users clash in the most devastating tactical war in jujutsu history.",
+      overview: "On October 31st, a curtain falls over Shibuya. Sorcerers and curse users clash in the most devastating tactical war in jujutsu history. With the fate of Tokyo hanging in the balance, Yuji Itadori and his allies must face unimaginable tragedies and overwhelmingly powerful cursed spirits.",
       backdrop_path: "https://image.tmdb.org/t/p/original/z0iCS5Znx7TeRwlYSd4c01Z0lFx.jpg",
       poster_path: "https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",
       release_date: "2023",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.9,
       runtime: "Season 2 Complete",
       genres: ["Supernatural", "Shonen", "Action"],
@@ -196,12 +240,16 @@ export const HERO_DATA = {
     },
     {
       id: "hero-a-demonslayer",
+
+      youtube_id: "dQw4w9WgXcQ",
       title: "Demon Slayer: Hashira Training",
       original_title: "鬼滅の刃",
-      overview: "Tanjiro visits the Stone Hashira, Himejima, who intends to prepare him for the upcoming battles. The final Infinity Castle movie trilogy awaits.",
+      overview: "Tanjiro visits the Stone Hashira, Himejima, who intends to prepare him for the upcoming battles. The final Infinity Castle movie trilogy awaits. As the demon slayer corps undergoes rigorous training, Muzan Kibutsuji relentlessly schemes in the shadows. The ultimate clash between humanity and the demon progenitors draws near.",
       backdrop_path: "https://image.tmdb.org/t/p/original/iNqa3V1TKqj2921t0ZfVlV17b5Q.jpg",
       poster_path: "https://cdn.myanimelist.net/images/anime/1764/126627l.jpg",
       release_date: "2024",
+
+      youtube_id: "dQw4w9WgXcQ",
       vote_average: 8.8,
       runtime: "Season 4 Complete",
       genres: ["Historical", "Action", "Supernatural"],
@@ -457,7 +505,7 @@ export const BENTO_DATA = {
       subtitle: "The Sci-Fi Epic of a Generation",
       tag: "CURATOR'S SPOTLIGHT",
       image: "https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtecsmEZgn9c2.jpg",
-      description: "From Arrakis to Geidi Prime, immerse yourself in Christopher Walken, Timothée Chalamet, and Zendaya's monumental cinematic journey.",
+      description: "From Arrakis to Geidi Prime, immerse yourself in Christopher Walken, Timothée Chalamet, and Zendaya's monumental cinematic journey. This visually breathtaking masterpiece redefines the scale of modern science fiction. Witness the rise of the Lisan al Gaib as destiny unfolds.",
       stats: "IMAX 70mm • 10 Oscar Noms"
     },
     tallFeature: {
@@ -488,7 +536,7 @@ export const BENTO_DATA = {
       subtitle: "The War for Westeros Has Begun",
       tag: "PRESTIGE BINGE",
       image: "https://image.tmdb.org/t/p/original/etj5CuMuam3guZq0AIpsaj2NIvs.jpg",
-      description: "Witness the brutal rivalry between the Greens and the Blacks in television's most ambitious production.",
+      description: "Witness the brutal rivalry between the Greens and the Blacks in television's most ambitious production. As dragons take to the sky, alliances fracture and royal blood is spilled. The Dance of the Dragons begins a fiery chapter in Westerosi history.",
       stats: "Dolby Atmos • 4K HDR"
     },
     tallFeature: {
@@ -519,7 +567,7 @@ export const BENTO_DATA = {
       subtitle: "The Shadow Monarch Awaken",
       tag: "GLOBAL SIMULCAST",
       image: "https://image.tmdb.org/t/p/original/geYUqF3vO2hZ5Gj6M09F1Y7qQn0.jpg",
-      description: "Sung Jinwoo breaks all limits. Experience high-octane battle sequences animated by A-1 Pictures with Hiroyuki Sawano's thundering score.",
+      description: "Sung Jinwoo breaks all limits to ascend the hunter ranks. Experience high-octane battle sequences animated by A-1 Pictures with Hiroyuki Sawano's thundering score. A gripping tale of overwhelming power, survival, and endless progression.",
       stats: "Crunchyroll Record • Sub & Dub"
     },
     tallFeature: {
@@ -550,7 +598,7 @@ export const BENTO_DATA = {
       subtitle: "Europe's Ultimate Football Night",
       tag: "LIVE BROADCAST",
       image: "https://images.unsplash.com/photo-1518605368461-1ee7c532066d?q=80&w=1925",
-      description: "The giants of European football clash under the stadium lights for eternal glory and the European Cup.",
+      description: "The giants of European football clash under the stadium lights for eternal glory and the European Cup. Unforgettable moments of individual brilliance meet intense tactical mastery on the pitch. This is the pinnacle of the beautiful game broadcast in stunning 4K.",
       stats: "4K HDR • 60 FPS Feed"
     },
     tallFeature: {
@@ -581,7 +629,7 @@ export const BENTO_DATA = {
       subtitle: "Faker & T1 Defend the Summoner's Cup",
       tag: "GLOBAL TOURNAMENT",
       image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1925",
-      description: "Over 6 million peak concurrent viewers witness the greatest esports dynasty battle against the challenger titans.",
+      description: "Over 6 million peak concurrent viewers witness the greatest esports dynasty battle against the challenger titans. Every team fight, baron steal, and backdoor play is analyzed in real-time. Experience the absolute zenith of competitive League of Legends.",
       stats: "Twitch / YouTube 4K Live"
     },
     tallFeature: {
@@ -614,6 +662,8 @@ export const VERTICAL_QUOTES = {
   movies: [
     {
       id: "qm-1",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "Love is the one thing we're capable of perceiving that transcends dimensions of time and space.",
       movie: "Interstellar",
       character: "Brand",
@@ -621,6 +671,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qm-2",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "You either die a hero, or you live long enough to see yourself become the villain.",
       movie: "The Dark Knight",
       character: "Harvey Dent",
@@ -628,6 +680,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qm-3",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "What we do in life echoes in eternity.",
       movie: "Gladiator",
       character: "Maximus Decimus Meridius",
@@ -635,6 +689,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qm-4",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "It's only after we've lost everything that we're free to do anything.",
       movie: "Fight Club",
       character: "Tyler Durden",
@@ -645,6 +701,8 @@ export const VERTICAL_QUOTES = {
   series: [
     {
       id: "qs-1",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "I am not in danger, Skyler. I AM the danger. A guy opens his door and gets shot, and you think that of me? No. I am the one who knocks!",
       movie: "Breaking Bad",
       character: "Walter White",
@@ -652,6 +710,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qs-2",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "You have to be a killer. If you can't be a killer, then I'm afraid you can't be the one.",
       movie: "Succession",
       character: "Logan Roy",
@@ -659,6 +719,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qs-3",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "Chaos isn't a pit. Chaos is a ladder.",
       movie: "Game of Thrones",
       character: "Littlefinger",
@@ -666,6 +728,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qs-4",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "Be curious, not judgmental.",
       movie: "Ted Lasso",
       character: "Ted Lasso",
@@ -676,6 +740,8 @@ export const VERTICAL_QUOTES = {
   anime: [
     {
       id: "qa-1",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "If you win, you live. If you lose, you die. If you don't fight, you can't win!",
       movie: "Attack on Titan",
       character: "Eren Yeager",
@@ -683,6 +749,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qa-2",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "It's not about how long you live, but how deep the connection is with those you meet along the way.",
       movie: "Frieren: Beyond Journey's End",
       character: "Frieren",
@@ -690,6 +758,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qa-3",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "When do you think people die? When they are shot? No. When they are forgotten!",
       movie: "One Piece",
       character: "Dr. Hiriluk",
@@ -697,6 +767,8 @@ export const VERTICAL_QUOTES = {
     },
     {
       id: "qa-4",
+
+      youtube_id: "dQw4w9WgXcQ",
       quote: "I'll take a potato chip... and EAT IT!",
       movie: "Death Note",
       character: "Light Yagami",

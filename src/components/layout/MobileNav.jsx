@@ -19,8 +19,8 @@ const MobileNav = () => {
   if (location.pathname === "/") return null;
 
   return (
-    <div className="fixed bottom-5 inset-x-0 mx-auto w-[92%] max-w-sm z-50 md:hidden pointer-events-auto">
-      <nav className="relative flex items-center justify-around py-3 px-3 rounded-full bg-[#08080c]/85 dark:bg-[#08080c]/85 bg-white/90 backdrop-blur-2xl border border-white/10 dark:border-white/10 border-gray-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
+    <div className="fixed bottom-5 inset-x-0 mx-auto w-[92%] max-w-sm z-50 md:hidden pointer-events-auto h-[68px]">
+      <nav className="relative flex items-center justify-around h-full px-3 rounded-full bg-[#08080c]/85 dark:bg-[#08080c]/85 bg-white/90 backdrop-blur-2xl border border-white/10 dark:border-white/10 border-gray-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -54,13 +54,13 @@ const MobileNav = () => {
 
                 {/* Watchlist Count Badge */}
                 {item.badge > 0 && (
-                  <span className="absolute -top-1.5 -right-2 bg-blue-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md shadow-blue-600/40">
+                  <span className="absolute -top-1.5 -right-2 bg-blue-600 text-white text-meta font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md shadow-blue-600/40">
                     {item.badge > 99 ? "99+" : item.badge}
                   </span>
                 )}
               </div>
 
-              <span className="relative z-10 text-[10px] mt-1 font-semibold tracking-tight">
+              <span className="relative z-10 text-meta mt-1 font-semibold tracking-tight">
                 {item.name}
               </span>
             </Link>

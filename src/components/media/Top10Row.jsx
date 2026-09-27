@@ -1,11 +1,11 @@
 import { useRef, useContext } from "react";
 import { Play, Plus, Check, ChevronLeft, ChevronRight, Star, Sparkles } from "lucide-react";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { GlobalContext } from "../../context/GlobalState";
 import { TOP10_DATA } from "../../utils/movieData";
 import SmartImage from "./SmartImage";
 import Section from "../layout/Section";
+import { motionHover } from "../../utils/motion";
 
 const Top10Row = ({
   vertical = "movies",
@@ -75,7 +75,7 @@ const Top10Row = ({
           </div>
         </div>
 
-        <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border backdrop-blur-md ${verticalTheme.pill}`}>
+        <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-meta font-black uppercase tracking-wider border backdrop-blur-md ${verticalTheme.pill}`}>
           <Sparkles size={12} className="inline mr-1" /> Sentiment Verified
         </span>
       </div>
@@ -129,9 +129,9 @@ const Top10Row = ({
 
               {/* POSTER CARD (Overlaps the number) */}
               <motion.div
-                initial={{ scale: 1, y: 0 }}
-                whileHover={{ scale: 1.05, y: -8 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                variants={motionHover}
+                initial="rest"
+                whileHover="hover"
                 className="relative z-10 w-36 sm:w-44 md:w-52 aspect-[2/3] rounded-2xl overflow-hidden bg-[#0c0d14] border border-white/10 group-hover/item:border-white/30 shadow-2xl will-change-transform"
               >
                 <SmartImage
@@ -146,15 +146,17 @@ const Top10Row = ({
 
                 {/* Gradient vignette */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-85 group-hover/item:opacity-95 transition-opacity" />
+                {/* TEXT SCRIM */}
+                <div className="absolute inset-0 z-10 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent 60%)" }} />
 
                 {/* Rating & Sentiment Badge */}
                 <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20">
-                  <div className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/10 text-[10px] sm:text-[11px] font-bold text-yellow-400 flex items-center gap-1 shadow-sm">
+                  <div className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/10 text-meta font-bold text-yellow-400 flex items-center gap-1 shadow-sm">
                     <Star size={11} fill="currentColor" /> {Number(rating).toFixed(1)}
                   </div>
 
                   {item.sentiment?.score && (
-                    <div className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black tracking-wider shadow-sm backdrop-blur-md">
+                    <div className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-meta font-black tracking-wider shadow-sm backdrop-blur-md">
                       {item.sentiment.score}
                     </div>
                   )}
@@ -189,10 +191,10 @@ const Top10Row = ({
                     </button>
                   </div>
 
-                  <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-1 leading-snug">
+                  <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug">
                     {item.title}
                   </h3>
-                  <div className="flex items-center justify-between text-[10px] text-gray-400 font-semibold">
+                  <div className="flex items-center justify-between text-meta text-gray-400 font-semibold">
                     <span>{item.release_date?.slice(0, 4)}</span>
                     <span className="text-emerald-400 font-bold">{item.sentiment?.label || "Acclaimed"}</span>
                   </div>

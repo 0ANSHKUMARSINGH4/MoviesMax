@@ -49,26 +49,27 @@ export function normalizeMedia(item) {
   }
 
   return {
+    ...item,
     id: String(item.id || item.imdbID || item.mal_id || item.title || Math.random()),
     title: item.title || item.name || item.Title || "Featured Title",
     original_title: item.original_title || item.title_japanese || item.title || item.name || "",
     poster_path: getMediaImageUrl(rawPoster, "w500"),
     backdrop_path: getMediaImageUrl(rawBackdrop, "original"),
-    vote_average: isNaN(rating) ? 8.4 : rating,
-    release_date: releaseYear,
+    vote_average: isNaN(rating) ? null : rating,
+    release_date: item.release_date || item.first_air_date || item.Year || item.year || "",
     overview:
       item.overview ||
       item.synopsis ||
       item.Plot ||
       item.description ||
-      "An extraordinary story of ambition, survival, and unexpected choices that change everything.",
+      "",
     genres,
-    runtime: item.runtime || item.Runtime || item.meta || (item.isJikan ? "24 Episodes" : "2h 15m"),
+    runtime: item.runtime || item.Runtime || item.meta || "",
     isJikan: !!(item.isJikan || item.mal_id),
     category:
       item.category ||
       (item.isJikan ? "Anime" : item.first_air_date || item.seasons ? "TV Show" : "Movie"),
-    director: item.director || item.Director || "Acclaimed Director",
-    country: item.country || item.Country || item.Language || "International",
+    director: item.director || item.Director || "",
+    country: item.country || item.Country || item.Language || "",
   };
 }

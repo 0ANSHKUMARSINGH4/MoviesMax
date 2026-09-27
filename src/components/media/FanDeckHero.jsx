@@ -315,7 +315,7 @@ const FanDeckHero = ({ onOpenDossier }) => {
                       <Star size={13} fill="currentColor" /> {item.rating}
                     </div>
 
-                    <div className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-white font-semibold text-[11px] shadow-md flex items-center gap-1.5">
+                    <div className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-white font-semibold text-meta shadow-md flex items-center gap-1.5">
                       {item.category === "Anime" ? <Sparkles size={12} className="text-purple-400" /> : <Tv size={12} className="text-blue-400" />}
                       {item.category}
                     </div>
@@ -407,12 +407,12 @@ const FanDeckHero = ({ onOpenDossier }) => {
                   {currentShow.genres.map((g) => (
                     <span
                       key={g}
-                      className="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-white/10 backdrop-blur-md border border-white/15 text-gray-200"
+                      className="px-2.5 py-1 rounded-md text-meta font-bold uppercase tracking-wider bg-white/10 backdrop-blur-md border border-white/15 text-gray-200"
                     >
                       {g}
                     </span>
                   ))}
-                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-yellow-500/20 border border-yellow-500/30 text-yellow-400">
+                  <span className="px-2.5 py-1 rounded-md text-meta font-bold bg-yellow-500/20 border border-yellow-500/30 text-yellow-400">
                     IMDb {currentShow.rating}/10
                   </span>
                 </div>
@@ -492,7 +492,7 @@ const FanDeckHero = ({ onOpenDossier }) => {
                     </div>
 
                     <div className="p-3">
-                      <div className="flex items-center justify-between text-[11px] text-gray-400 font-semibold mb-1">
+                      <div className="flex items-center justify-between text-meta text-gray-400 font-semibold mb-1">
                         <span className="text-purple-400">{ep.ep}</span>
                         <span>{ep.duration}</span>
                       </div>

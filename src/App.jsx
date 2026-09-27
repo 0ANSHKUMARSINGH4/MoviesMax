@@ -71,7 +71,7 @@ function App() {
   return (
     <GlobalProvider>
       <Router>
-        <div className="min-h-screen bg-dark-main text-gray-200 font-sans selection:bg-blue-600 selection:text-white transition-colors duration-300 pb-24 md:pb-0">
+        <div className="min-h-screen bg-dark-main text-gray-200 font-sans selection:bg-blue-600 selection:text-white transition-colors duration-300 pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-0">
           <Navbar />
           <AnimatedRoutes />
           <MobileNav />

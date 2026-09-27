@@ -10,13 +10,14 @@ import SmartImage from "../media/SmartImage";
 
 const MovieModal = ({ movie, onClose }) => {
   const { API_KEY, BASE_URL, watchlist, toggleWatchlist, favorites, toggleFavorite } = useContext(GlobalContext);
-  const [videoKey, setVideoKey] = useState(null);
+  const media = normalizeMedia(movie);
+  const [videoKey, setVideoKey] = useState(media?.youtube_id || null);
   const [details, setDetails] = useState(null);
   const [cast, setCast] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Normalize incoming movie object to ensure 100% consistent fields
-  const media = normalizeMedia(movie);
+  const vertical = media?.vertical || (media?.isJikan ? "anime" : (media?.category === "TV Show" || media?.category === "series" ? "series" : "movies"));
 
   const inWatchlist = watchlist?.some((item) => String(item.id) === String(media?.id));
   const isLiked = favorites?.some((item) => String(item.id) === String(media?.id));
@@ -37,6 +38,8 @@ const MovieModal = ({ movie, onClose }) => {
 
           if (data?.trailer?.youtube_id) {
             setVideoKey(data.trailer.youtube_id);
+          } else if (media.youtube_id) {
+            setVideoKey(media.youtube_id);
           }
 
           const charRes = await axios.get(`https://api.jikan.moe/v4/anime/${media.id}/characters`);
@@ -53,16 +56,18 @@ const MovieModal = ({ movie, onClose }) => {
             overview: data?.synopsis || media.overview,
             release_date: data?.year ? String(data.year) : media.release_date,
             score: data?.score || media.vote_average,
-            director: "Animation Studio",
-            country: "Japan",
             original_title: data?.title_japanese || media.original_title || media.title,
+            studio: data?.studios?.[0]?.name,
+            source_material: data?.source,
+            season_year: data?.season ? `${data.season} ${data.year}` : "",
+            simulcast: data?.broadcast?.string,
           });
           setCast(topCast);
         } else {
           // --- MOVIE / TV (OMDb + Gemini) ---
           const res = await fetchDetailedMovieInfo(media.title);
           if (res) {
-            setVideoKey(res.videoKey);
+            setVideoKey(res.videoKey || media.youtube_id || null);
             setDetails({
               ...res.details,
               score: res.movieData?.vote_average || media.vote_average,
@@ -109,8 +114,8 @@ const MovieModal = ({ movie, onClose }) => {
   if (!media) return null;
 
   // Compute radial score values accurately
-  const scoreValue = details?.score || media.vote_average || 8.4;
-  const normalizedScore = Math.min(10, Math.max(0, Number(scoreValue)));
+  const scoreValue = details?.score || media.vote_average || null;
+  const normalizedScore = scoreValue ? Math.min(10, Math.max(0, Number(scoreValue))) : null;
   const circumference = 2 * Math.PI * 38; // Radius 38
   const strokeDashoffset = circumference - (normalizedScore / 10) * circumference;
 
@@ -183,26 +188,6 @@ const MovieModal = ({ movie, onClose }) => {
                   imgClassName="object-cover opacity-50"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c11] via-transparent to-black/60" />
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
-                  <div className="bg-black/80 p-6 rounded-2xl backdrop-blur-md border border-white/10 max-w-sm">
-                    <p className="text-gray-300 font-semibold mb-3 text-sm sm:text-base">
-                      {loading ? "Searching official trailer database..." : "Official YouTube trailer not found in catalog"}
-                    </p>
-                    {!loading && (
-                      <a
-                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
-                          media.title + " official trailer"
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all hover:scale-105 shadow-lg shadow-red-600/30"
-                      >
-                        <Search size={15} /> Search on YouTube <ExternalLink size={13} />
-                      </a>
-                    )}
-                  </div>
-                </div>
               </div>
             )}
           </div>
@@ -213,7 +198,7 @@ const MovieModal = ({ movie, onClose }) => {
             <div className="flex flex-col lg:flex-row gap-6 justify-between items-start border-b border-white/10 pb-6">
               <div className="space-y-3 max-w-2xl">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-blue-600 text-white shadow-sm shadow-blue-500/30">
+                  <span className="px-2.5 py-0.5 rounded-full text-meta font-black uppercase tracking-wider bg-blue-600 text-white shadow-sm shadow-blue-500/30">
                     {media.category}
                   </span>
                   <span className="text-xs text-gray-400 font-semibold">
@@ -225,7 +210,7 @@ const MovieModal = ({ movie, onClose }) => {
                   </span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight font-display">
+                <h1 className="text-card-title sm:text-section font-black text-white tracking-tight font-display">
                   {media.title}
                 </h1>
 
@@ -276,173 +261,307 @@ const MovieModal = ({ movie, onClose }) => {
               </div>
             </div>
 
-            {/* 3-Column Dossier: Specs + Radial Score Gauge + Vinyl OST */}
+            {/* 3-Column Dossier: Vertical-Aware Schemas */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              {/* Column 1: Info Specs */}
+              {/* Column 1: Specs */}
               <div className="space-y-4 bg-white/[0.03] p-5 rounded-2xl border border-white/5">
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Specs & Details
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> {vertical === "sports" || vertical === "esports" ? "Match Details" : "Specs & Details"}
                 </span>
 
                 <div className="space-y-3 text-sm">
-                  <div>
-                    <span className="text-gray-500 text-xs uppercase font-semibold block">Director / Studio</span>
-                    <span className="text-gray-200 font-medium">{details?.director || media.director}</span>
+                  {vertical === "movies" && (
+                    <>
+                      {details?.director && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Director</span>
+                          <span className="text-gray-200 font-medium">{details.director}</span>
+                        </div>
+                      )}
+                      {details?.studio && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Studio</span>
+                          <span className="text-gray-200 font-medium">{details.studio}</span>
+                        </div>
+                      )}
+                      {details?.certification && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Certification</span>
+                          <span className="text-gray-200 font-medium">{details.certification}</span>
+                        </div>
+                      )}
+                      {details?.release_date && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Release Year</span>
+                          <span className="text-gray-200 font-medium">{details.release_date}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {vertical === "series" && (
+                    <>
+                      {details?.showrunner && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Showrunner</span>
+                          <span className="text-gray-200 font-medium">{details.showrunner}</span>
+                        </div>
+                      )}
+                      {details?.network && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Network</span>
+                          <span className="text-gray-200 font-medium">{details.network}</span>
+                        </div>
+                      )}
+                      {(details?.seasons || details?.episodes) && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Length</span>
+                          <span className="text-gray-200 font-medium">{details.seasons ? `${details.seasons} Seasons` : ""} {details.episodes ? `(${details.episodes} Episodes)` : ""}</span>
+                        </div>
+                      )}
+                      {details?.status && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Status</span>
+                          <span className="text-gray-200 font-medium">{details.status}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {vertical === "anime" && (
+                    <>
+                      {details?.studio && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Studio</span>
+                          <span className="text-gray-200 font-medium">{details.studio}</span>
+                        </div>
+                      )}
+                      {details?.source_material && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Source Material</span>
+                          <span className="text-gray-200 font-medium">{details.source_material}</span>
+                        </div>
+                      )}
+                      {details?.season_year && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Season & Year</span>
+                          <span className="text-gray-200 font-medium">{details.season_year}</span>
+                        </div>
+                      )}
+                      {details?.simulcast && (
+                        <div>
+                          <span className="text-meta uppercase block text-gray-500">Simulcast Platform</span>
+                          <span className="text-gray-200 font-medium">{details.simulcast}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {vertical === "sports" && media.sports_data && (
+                    <>
+                      <div>
+                        <span className="text-meta uppercase block text-gray-500">Competition & Stage</span>
+                        <span className="text-gray-200 font-medium">{media.sports_data.competition} • {media.sports_data.stage}</span>
+                      </div>
+                      <div>
+                        <span className="text-meta uppercase block text-gray-500">Venue & Time</span>
+                        <span className="text-gray-200 font-medium">{media.sports_data.venue} <br/> {media.sports_data.date_time}</span>
+                      </div>
+                      <div>
+                        <span className="text-meta uppercase block text-gray-500">Broadcaster</span>
+                        <span className="text-gray-200 font-medium">{media.sports_data.broadcaster}</span>
+                      </div>
+                    </>
+                  )}
+
+                  {vertical === "esports" && media.esports_data && (
+                    <>
+                      <div>
+                        <span className="text-meta uppercase block text-gray-500">Tournament & Stage</span>
+                        <span className="text-gray-200 font-medium">{media.esports_data.tournament} • {media.esports_data.stage}</span>
+                      </div>
+                      <div>
+                        <span className="text-meta uppercase block text-gray-500">Format & Map Pool</span>
+                        <span className="text-gray-200 font-medium">{media.esports_data.series_format} <br/> Maps: {media.esports_data.map_pool}</span>
+                      </div>
+                      <div>
+                        <span className="text-meta uppercase block text-gray-500">Prize & Broadcast</span>
+                        <span className="text-gray-200 font-medium">{media.esports_data.prize_pool} • {media.esports_data.streaming_platform}</span>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Fallback for anything missing */}
+                  {!media.sports_data && !media.esports_data && (details?.country || media.country) && (
+                    <div>
+                      <span className="text-meta uppercase block text-gray-500">Region</span>
+                      <span className="text-gray-200 font-medium">{details?.country || media.country}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Column 2: Status / Score Block */}
+              {scoreValue && (vertical === "movies" || vertical === "series" || vertical === "anime") ? (
+                <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                    {vertical === "anime" ? "MAL Score" : "Official Score"}
+                  </span>
+
+                  <div className="relative w-28 h-28 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90">
+                      <circle cx="56" cy="56" r="38" stroke="currentColor" strokeWidth="6" className="text-white/10" fill="transparent" />
+                      <circle cx="56" cy="56" r="38" stroke="currentColor" strokeWidth="6" className="text-blue-500" fill="transparent" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} strokeLinecap="round" style={{ filter: "drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))" }} />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-black text-white leading-none">
+                        {normalizedScore.toFixed(1)}
+                      </span>
+                      <span className="text-meta font-bold text-gray-400 mt-0.5">out of 10</span>
+                    </div>
                   </div>
 
-                  <div>
-                    <span className="text-gray-500 text-xs uppercase font-semibold block">Language / Region</span>
-                    <span className="text-gray-200 font-medium">{details?.country || media.country}</span>
+                  <div className={`mt-3 px-3 py-1 rounded-full text-xs font-black border ${scoreBadge.color}`}>
+                    {scoreBadge.label}
                   </div>
-
-                  <div>
-                    <span className="text-gray-500 text-xs uppercase font-semibold block">Community Rating</span>
-                    <div className="flex text-yellow-400 gap-1 pt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={15} fill="currentColor" />
-                      ))}
+                </div>
+              ) : (vertical === "sports" || vertical === "esports") ? (
+                <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white/[0.03] border border-white/5 text-center space-y-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-red-400 mb-2">Match Status</span>
+                  <div className="flex items-center gap-4 w-full justify-between">
+                    <div className="text-center w-1/3">
+                      <p className="text-sm font-bold text-gray-200 line-clamp-2">{vertical === "sports" ? media.sports_data?.team1?.name : media.esports_data?.team1?.name}</p>
+                    </div>
+                    <div className="w-1/3 text-center">
+                      <span className="text-3xl font-display font-black text-white">{vertical === "sports" ? media.sports_data?.score?.split(" ")[0] || "VS" : "VS"}</span>
+                    </div>
+                    <div className="text-center w-1/3">
+                      <p className="text-sm font-bold text-gray-200 line-clamp-2">{vertical === "sports" ? media.sports_data?.team2?.name : media.esports_data?.team2?.name}</p>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
+                  <span className="text-meta uppercase text-gray-500">No Score Data</span>
+                </div>
+              )}
 
-              {/* Column 2: RADIAL SCORE GAUGE (Design 2 Signature) */}
-              <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                  Official Score
-                </span>
-
-                <div className="relative w-28 h-28 flex items-center justify-center">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle
-                      cx="56"
-                      cy="56"
-                      r="38"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      className="text-white/10"
-                      fill="transparent"
-                    />
-                    <circle
-                      cx="56"
-                      cy="56"
-                      r="38"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      className="text-blue-500"
-                      fill="transparent"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={strokeDashoffset}
-                      strokeLinecap="round"
-                      style={{ filter: "drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))" }}
-                    />
-                  </svg>
-
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-black text-white leading-none">
-                      {normalizedScore.toFixed(1)}
-                    </span>
-                    <span className="text-[10px] font-bold text-gray-400 mt-0.5">out of 10</span>
+              {/* Column 3: Rosters / Extras */}
+              {vertical === "esports" && media.esports_data ? (
+                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 overflow-hidden flex flex-col">
+                  <span className="text-meta uppercase text-pink-400 mb-4 block">Active Rosters</span>
+                  <div className="flex justify-between text-xs gap-2 h-full">
+                    <div>
+                      <strong className="text-white block mb-1">{media.esports_data.team1.name}</strong>
+                      <ul className="text-gray-400 space-y-1">
+                        {media.esports_data.team1.roster.map(r => <li key={r}>{r}</li>)}
+                      </ul>
+                    </div>
+                    <div className="text-right">
+                      <strong className="text-white block mb-1">{media.esports_data.team2.name}</strong>
+                      <ul className="text-gray-400 space-y-1">
+                        {media.esports_data.team2.roster.map(r => <li key={r}>{r}</li>)}
+                      </ul>
+                    </div>
                   </div>
                 </div>
+              ) : (
+                <div className="relative overflow-hidden p-5 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col justify-between group">
+                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+                    <Disc size={14} /> Official Soundtrack
+                  </span>
 
-                <div className={`mt-3 px-3 py-1 rounded-full text-xs font-black border ${scoreBadge.color}`}>
-                  {scoreBadge.label}
-                </div>
-              </div>
-
-              {/* Column 3: VINYL SOUNDTRACK (OST) RECORD (Design 2 Signature) */}
-              <div className="relative overflow-hidden p-5 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col justify-between group">
-                <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
-                  <Disc size={14} /> Official Soundtrack
-                </span>
-
-                <div className="flex items-center gap-4 py-2">
-                  {/* Vinyl Album Cover */}
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-lg flex-shrink-0">
-                    <SmartImage
-                      src={media.poster_path}
-                      alt=""
-                      title={media.title}
-                      vertical={media.isJikan ? "anime" : "movies"}
-                      decorative
-                      className="w-full h-full"
-                      imgClassName="object-cover"
-                    />
-                  </div>
-
-                  {/* Vinyl Disc Sliding Out */}
-                  <div className="relative w-14 h-14 rounded-full bg-black border-2 border-gray-800 shadow-xl flex items-center justify-center transform -translate-x-3 group-hover:translate-x-0 group-hover:rotate-45 transition-all duration-500">
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 border border-white" />
-                  </div>
-                </div>
-
-                <p className="text-xs text-gray-400 line-clamp-1">
-                  Original Score & Master Themes
-                </p>
-              </div>
-            </div>
-
-            {/* Synopsis */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold text-white tracking-tight">Synopsis</h3>
-              <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
-                {details?.overview || media.overview}
-              </p>
-            </div>
-
-            {/* Scene Stills Photo Gallery */}
-            <div className="space-y-3 pt-2">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 flex items-center gap-2">
-                <ImageIcon size={15} /> Production Photos & Stills
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {sampleStills.map((still, idx) => (
-                  <div
-                    key={idx}
-                    className="aspect-video rounded-xl overflow-hidden border border-white/10 group cursor-pointer"
-                  >
-                    <SmartImage
-                      src={still}
-                      alt=""
-                      title={`${media.title} still ${idx + 1}`}
-                      vertical={media.isJikan ? "anime" : "movies"}
-                      decorative
-                      className="w-full h-full"
-                      imgClassName="object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Cast Portraits */}
-            <div className="space-y-3 pt-2">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400">
-                Starring & Cast
-              </h3>
-              <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
-                {cast.map((actor, idx) => (
-                  <div key={actor.id || idx} className="flex-none flex items-center gap-2.5 pr-2">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border border-white/15 flex-shrink-0">
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-lg flex-shrink-0">
                       <SmartImage
-                        src={actor.profile_path}
+                        src={media.poster_path}
                         alt=""
-                        title={actor.name}
-                        vertical={media.isJikan ? "anime" : "movies"}
+                        title={media.title}
+                        vertical={vertical}
                         decorative
                         className="w-full h-full"
                         imgClassName="object-cover"
                       />
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-white truncate w-24">{actor.name}</p>
-                      <p className="text-[10px] text-gray-400 truncate w-24">{actor.character}</p>
+
+                    <div className="relative w-14 h-14 rounded-full bg-black border-2 border-gray-800 shadow-xl flex items-center justify-center transform -translate-x-3 group-hover:translate-x-0 group-hover:rotate-45 transition-all duration-500">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 border border-white" />
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <p className="text-xs text-gray-400 line-clamp-1">
+                    Original Score & Master Themes
+                  </p>
+                </div>
+              )}
             </div>
+
+            {/* Synopsis */}
+            {((details?.overview || media.overview) && (details?.overview || media.overview).length > 0) && (
+              <div className="space-y-3">
+                <h3 className="text-section font-bold text-white tracking-tight">Synopsis</h3>
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+                  {details?.overview || media.overview}
+                </p>
+              </div>
+            )}
+
+            {/* Scene Stills Photo Gallery (Only if there are actual unique stills) */}
+            {sampleStills.length > 2 && (
+              <div className="space-y-3 pt-2">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 flex items-center gap-2">
+                  <ImageIcon size={15} /> Production Photos & Stills
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {sampleStills.map((still, idx) => (
+                    <div
+                      key={idx}
+                      className="aspect-video rounded-xl overflow-hidden border border-white/10 group cursor-pointer"
+                    >
+                      <SmartImage
+                        src={still}
+                        alt=""
+                        title={`${media.title} still ${idx + 1}`}
+                        vertical={vertical}
+                        decorative
+                        className="w-full h-full"
+                        imgClassName="object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Cast Portraits */}
+            {cast.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400">
+                  Starring & Cast
+                </h3>
+                <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
+                  {cast.map((actor, idx) => (
+                    <div key={actor.id || idx} className="flex-none flex items-center gap-2.5 pr-2">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-white/15 flex-shrink-0">
+                        <SmartImage
+                          src={actor.profile_path}
+                          alt=""
+                          title={actor.name}
+                          vertical={vertical}
+                          decorative
+                          className="w-full h-full"
+                          imgClassName="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white truncate w-24">{actor.name}</p>
+                        <p className="text-meta text-gray-400 truncate w-24">{actor.character}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

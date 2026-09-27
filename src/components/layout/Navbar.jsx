@@ -184,7 +184,7 @@ const Navbar = () => {
               className="absolute left-3 text-gray-400 pointer-events-none"
             />
             {!isSearchOpen && !searchQuery && (
-              <span className="absolute right-2.5 px-1.5 py-0.5 rounded text-[10px] font-mono text-gray-400 border border-white/10 pointer-events-none">
+              <span className="absolute right-2.5 px-1.5 py-0.5 rounded text-meta font-mono text-gray-400 border border-white/10 pointer-events-none">
                 /
               </span>
             )}
@@ -208,7 +208,7 @@ const Navbar = () => {
           >
             <Bookmark size={16} />
             {watchlist?.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md shadow-purple-600/40">
+              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-meta font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md shadow-purple-600/40">
                 {watchlist.length > 99 ? "99+" : watchlist.length}
               </span>
             )}

@@ -59,7 +59,7 @@ const Watchlist = () => {
 
         {/* EMPTY STATE */}
         {watchlist.length === 0 ? (
-          <div className="py-20 flex flex-col items-center justify-center text-center space-y-sp-3 max-w-md mx-auto">
+          <div className="py-12 flex flex-col items-center justify-center text-center space-y-sp-3 max-w-md mx-auto">
             <div className="w-20 h-20 rounded-3xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shadow-[0_0_40px_rgba(37,99,235,0.15)]">
               <Bookmark size={36} />
             </div>

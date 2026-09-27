@@ -52,7 +52,7 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-sp-3 gap-sp-1">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${verticalTheme.pillBg}`}>
+            <span className={`px-2.5 py-0.5 rounded-full text-meta font-black uppercase tracking-wider border ${verticalTheme.pillBg}`}>
               <Sparkles size={11} className="inline mr-1" /> Pinterest & Figma Editorial
             </span>
             <span className="text-xs text-gray-400 font-semibold">Curated Moodboard</span>
@@ -88,12 +88,14 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#08090e] via-[#08090e]/60 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#08090e]/80 via-transparent to-transparent" />
+            {/* TEXT SCRIM */}
+            <div className="absolute inset-0 z-10 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent 60%)" }} />
           </div>
 
           {/* Content */}
           <div className="relative z-10 space-y-3 max-w-lg">
             <div className="flex items-center gap-2">
-              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${verticalTheme.pillBg} border backdrop-blur-md`}>
+              <span className={`px-3 py-1 rounded-full text-meta font-black uppercase tracking-wider ${verticalTheme.pillBg} border backdrop-blur-md`}>
                 <Flame size={12} className="inline mr-1" /> {data.spotlight.tag}
               </span>
               <span className="text-xs font-semibold text-gray-300 backdrop-blur-sm px-2.5 py-0.5 rounded-full bg-black/40 border border-white/10">
@@ -135,10 +137,12 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
               imgClassName="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            {/* TEXT SCRIM */}
+            <div className="absolute inset-0 z-10 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent 60%)" }} />
           </div>
 
           <div className="relative z-10 space-y-1.5">
-            <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400 flex items-center gap-1">
+            <span className="text-meta font-black uppercase tracking-wider text-yellow-400 flex items-center gap-1">
               <Award size={13} /> {data.tallFeature.tag}
             </span>
             <h4 className="text-xl font-black text-white font-display">
@@ -160,7 +164,7 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
           className={`relative rounded-3xl overflow-hidden bg-gradient-to-br ${data.sentimentCard.gradient} border border-white/15 ${verticalTheme.borderGlow} transition-all duration-500 p-5 flex flex-col justify-between shadow-xl backdrop-blur-xl group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
+            <span className="text-meta font-black uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
               <Sparkles size={12} className={verticalTheme.accent} /> Sentiment Metric
             </span>
             <span className="text-2xl font-black text-white tracking-tight drop-shadow font-display">
@@ -172,7 +176,7 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
             <h4 className="text-base font-black text-white font-display leading-tight mb-1">
               {data.sentimentCard.title}
             </h4>
-            <p className="text-[11px] text-gray-300 font-medium line-clamp-2 leading-relaxed">
+            <p className="text-meta text-gray-300 font-medium line-clamp-2 leading-relaxed">
               {data.sentimentCard.statDetail}
             </p>
           </div>
@@ -185,7 +189,7 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
           className={`relative rounded-3xl overflow-hidden bg-[#0c0d14] border border-white/10 ${verticalTheme.borderGlow} transition-all duration-500 p-5 flex flex-col justify-between shadow-xl group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+            <span className="text-meta font-black uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
               <Disc size={13} className={verticalTheme.accent} /> {data.soundtrackCard.label}
             </span>
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

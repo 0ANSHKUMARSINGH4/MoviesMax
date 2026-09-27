@@ -169,7 +169,7 @@ const CylinderCarousel3D = ({ onMovieClick }) => {
 
       {/* 2. SECTION HEADER */}
       <div className="max-w-7xl mx-auto px-6 mb-10 text-center space-y-2 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-widest text-gray-300">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-meta font-black uppercase tracking-widest text-gray-300">
           <span className="w-2 h-2 rounded-full bg-netflix-red animate-pulse" />
           Interactive 3D Stage
         </div>
@@ -269,7 +269,7 @@ const CylinderCarousel3D = ({ onMovieClick }) => {
                 {/* TOP BADGES (Network Pill + Rating Pill - From Video) */}
                 <div className="absolute top-4 inset-x-4 flex items-center justify-between z-10 pointer-events-none">
                   {/* Network Pill Badge (Left) */}
-                  <div className={`px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider shadow-lg backdrop-blur-md ${item.networkBg}`}>
+                  <div className={`px-2.5 py-1 rounded-md text-meta font-black uppercase tracking-wider shadow-lg backdrop-blur-md ${item.networkBg}`}>
                     {item.networkBadge}
                   </div>
 
@@ -292,7 +292,7 @@ const CylinderCarousel3D = ({ onMovieClick }) => {
                   {/* Center Card Play Hint */}
                   {isCenter && (
                     <div className="pt-2 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-black font-black text-[11px] shadow-lg hover:scale-105 transition-transform">
+                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-black font-black text-meta shadow-lg hover:scale-105 transition-transform">
                         <Play size={10} fill="black" /> Click to Watch
                       </span>
                     </div>
