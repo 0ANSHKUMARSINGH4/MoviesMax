@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { Sun, Moon, Search, Bookmark, User, Bell, LayoutGrid } from "lucide-react";
+import { Search, Bookmark, Bell, LayoutGrid } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
 import Logo from "./Logo";
@@ -8,8 +8,10 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-  const { theme, toggleTheme, watchlist } = useContext(GlobalContext);
+  const userMenuRef = useRef(null);
+  const { user, logout, defaultPlaylist } = useContext(GlobalContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,6 +30,19 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close user dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    if (isUserMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isUserMenuOpen]);
 
   // Keyboard shortcut '/' to focus search
   useEffect(() => {
@@ -207,32 +222,61 @@ const Navbar = () => {
             title="My Watchlist"
           >
             <Bookmark size={16} />
-            {watchlist?.length > 0 && (
+            {defaultPlaylist?.movies?.length > 0 && (
               <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-meta font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md shadow-purple-600/40">
-                {watchlist.length > 99 ? "99+" : watchlist.length}
+                {defaultPlaylist.movies.length > 99 ? "99+" : defaultPlaylist.movies.length}
               </span>
             )}
           </Link>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-colors"
-            title="Toggle theme"
-          >
-            {theme === "dark" ? (
-              <Sun size={16} className="hover:text-yellow-400 transition-colors" />
-            ) : (
-              <Moon size={16} className="hover:text-purple-400 transition-colors" />
-            )}
-          </button>
+          {/* User Account / Sign In */}
+          {user ? (
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-[1.5px] shadow-md shadow-blue-500/20 hover:scale-105 transition-transform focus:outline-none flex items-center justify-center"
+                title={user.name || "User account"}
+              >
+                <div className="w-full h-full rounded-full bg-dark-card flex items-center justify-center text-white text-xs font-bold uppercase">
+                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                </div>
+              </button>
 
-          {/* User Profile Avatar Pill (From Video Frame 00:00) */}
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 p-[1.5px] cursor-pointer shadow-md shadow-purple-500/20 hover:scale-105 transition-transform">
-            <div className="w-full h-full rounded-full bg-dark-card flex items-center justify-center text-white">
-              <User size={14} />
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-dark-card border border-white/10 rounded-2xl shadow-2xl py-2 z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-4 py-2 border-b border-white/10">
+                    <p className="text-xs font-bold text-white truncate">{user.name}</p>
+                    <p className="text-[11px] text-gray-400 truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    to="/watchlist"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Bookmark size={14} />
+                    My Watchlist
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      logout();
+                      navigate("/");
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors text-left"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <Link
+              to="/login"
+              className="px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-md shadow-blue-600/20"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </nav>

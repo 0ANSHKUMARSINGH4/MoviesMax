@@ -15,6 +15,7 @@ const Webseries = lazy(() => import("./pages/Webseries"));
 const Anime     = lazy(() => import("./pages/Anime"));
 const Esports   = lazy(() => import("./pages/Esports"));
 const Sports    = lazy(() => import("./pages/Sports"));
+const Login     = lazy(() => import("./pages/Login"));
 
 // Route-level page skeleton — shown while a lazy chunk loads.
 // Uses the .page-skeleton class from index.css (gradient, no all-black viewport).
@@ -60,6 +61,7 @@ function AnimatedRoutes() {
             <Route path="/anime"     element={<Anime />} />
             <Route path="/esports"   element={<Esports />} />
             <Route path="/sports"    element={<Sports />} />
+            <Route path="/login"     element={<Login />} />
           </Routes>
         </Suspense>
       </motion.div>

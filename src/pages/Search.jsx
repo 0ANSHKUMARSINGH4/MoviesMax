@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import MovieModal from "../components/modal/MovieModal";
 import MovieCard from "../components/media/MovieCard";
-import { searchMoviesFromOMDb } from "../utils/movieApi";
+import { searchMovies } from "../utils/movieApi";
 import { Search as SearchIcon, Film, Loader2 } from "lucide-react";
 
 const Search = () => {
@@ -17,7 +17,7 @@ const Search = () => {
       const fetchSearch = async () => {
         setLoading(true);
         try {
-          const results = await searchMoviesFromOMDb(query);
+          const results = await searchMovies(query);
           setMovies(results || []);
         } catch (error) {
           console.error("Search error:", error);
@@ -26,6 +26,8 @@ const Search = () => {
         }
       };
       fetchSearch();
+    } else {
+      setMovies([]);
     }
   }, [query]);
 
@@ -34,11 +36,17 @@ const Search = () => {
       {/* SEARCH RESULTS TITLE */}
       <div className="border-b border-white/10 pb-6 mb-8 max-w-7xl mx-auto">
         <h1 className="text-2xl sm:text-4xl font-black text-white font-display">
-          Search Results for: <span className="text-blue-500">"{query}"</span>
+          {query ? (
+            <>Search Results for: <span className="text-blue-500">"{query}"</span></>
+          ) : (
+            <span className="flex items-center gap-3"><SearchIcon size={32} /> Search</span>
+          )}
         </h1>
-        <p className="text-gray-400 text-sm mt-1">
-          Showing {movies.length} matched titles across global cinema databases
-        </p>
+        {query && (
+          <p className="text-gray-400 text-sm mt-1">
+            Showing {movies.length} matched titles across global cinema databases
+          </p>
+        )}
       </div>
 
       <div className="max-w-7xl mx-auto">
@@ -46,6 +54,16 @@ const Search = () => {
           <div className="py-24 flex flex-col items-center justify-center text-center space-y-3">
             <Loader2 size={36} className="animate-spin text-blue-500" />
             <p className="text-gray-400 font-semibold text-sm">Searching global streaming databases...</p>
+          </div>
+        ) : !query ? (
+          <div className="py-24 flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500">
+              <SearchIcon size={28} />
+            </div>
+            <h2 className="text-2xl font-black text-white">Start Searching</h2>
+            <p className="text-gray-400 text-sm">
+              Type a movie, series, or anime title in the search bar above.
+            </p>
           </div>
         ) : movies.length === 0 ? (
           <div className="py-24 flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">

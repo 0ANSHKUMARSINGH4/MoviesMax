@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Hero from "../components/media/Hero";
 import MovieRow from "../components/media/MovieRow";
 import Top10Row from "../components/media/Top10Row";
@@ -6,20 +6,29 @@ import BentoDiscoveryGrid from "../components/media/BentoDiscoveryGrid";
 import NewsCarousel from "../components/media/NewsCarousel";
 import AestheticQuoteRoundup from "../components/media/AestheticQuoteRoundup";
 import MovieModal from "../components/modal/MovieModal";
+import { fetchMoviesByVertical } from "../utils/movieApi";
 
 const Anime = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [animeList, setAnimeList] = useState([]);
+
+  useEffect(() => {
+    fetchMoviesByVertical("anime").then(setAnimeList).catch(console.error);
+  }, []);
+
+  const items = Array.isArray(animeList) ? animeList : [];
 
   return (
     <div className="pb-24 relative min-h-screen bg-v-anime-base text-gray-200">
       {/* 1. CINEMATIC ANIME HERO */}
-      <Hero vertical="anime" onPlay={setSelectedMovie} />
+      <Hero vertical="anime" heroItems={items} onPlay={setSelectedMovie} />
 
       {/* 2. TOP 10 ANIME WITH SENTIMENT ANALYSIS */}
       <div className="-mt-8 sm:-mt-12 md:-mt-16 relative z-20">
         <Top10Row
           vertical="anime"
           title="Top 10 Anime All Time (Sentiment Analysis & MyAnimeList)"
+          items={items.length >= 5 ? items.slice(0, 10) : undefined}
           onMovieClick={setSelectedMovie}
         />
       </div>
@@ -43,25 +52,22 @@ const Anime = () => {
       <div className="relative z-20 space-y-sp-4 pt-sp-4 container-mx bg-gradient-to-b from-v-anime-surface to-v-anime-base">
         <MovieRow
           title="Top Rated Classics (Crunchyroll)"
-          endpoint="/top/anime"
-          isJikan={true}
           vertical="anime"
+          items={items.length >= 4 ? items.slice(0, 8) : undefined}
           onMovieClick={setSelectedMovie}
         />
 
         <MovieRow
           title="Currently Airing Simulcasts"
-          endpoint="/seasons/now"
-          isJikan={true}
           vertical="anime"
+          items={items.length >= 8 ? items.slice(4, 12) : undefined}
           onMovieClick={setSelectedMovie}
         />
 
         <MovieRow
           title="Top Anime Movies & Features"
-          endpoint="/top/anime?type=movie"
-          isJikan={true}
           vertical="anime"
+          items={items.length >= 12 ? items.slice(8, 16) : undefined}
           onMovieClick={setSelectedMovie}
         />
       </div>

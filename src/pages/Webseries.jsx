@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Hero from "../components/media/Hero";
 import MovieRow from "../components/media/MovieRow";
 import Top10Row from "../components/media/Top10Row";
@@ -7,14 +7,22 @@ import ContinueWatchingRow from "../components/media/ContinueWatchingRow";
 import AestheticQuoteRoundup from "../components/media/AestheticQuoteRoundup";
 import NewsCarousel from "../components/media/NewsCarousel";
 import MovieModal from "../components/modal/MovieModal";
+import { fetchMoviesByVertical } from "../utils/movieApi";
 
 const Webseries = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [seriesList, setSeriesList] = useState([]);
+
+  useEffect(() => {
+    fetchMoviesByVertical("series").then(setSeriesList).catch(console.error);
+  }, []);
+
+  const items = Array.isArray(seriesList) ? seriesList : [];
 
   return (
     <div className="pb-24 relative min-h-screen bg-v-series-base text-gray-200">
       {/* 1. CINEMATIC TV SHOWS HERO */}
-      <Hero vertical="series" onPlay={setSelectedMovie} />
+      <Hero vertical="series" heroItems={items} onPlay={setSelectedMovie} />
 
       {/* 2. CONTINUE WATCHING QUEUE */}
       <div className="-mt-8 md:-mt-12 relative z-20">
@@ -26,6 +34,7 @@ const Webseries = () => {
         <Top10Row
           vertical="series"
           title="Top 10 TV Series All Time (Sentiment Analysis & Verified Ratings)"
+          items={items.length >= 5 ? items.slice(0, 10) : undefined}
           onMovieClick={setSelectedMovie}
         />
       </div>
@@ -50,24 +59,28 @@ const Webseries = () => {
         <MovieRow
           title="Western Prestige TV"
           vertical="series"
+          items={items.length >= 4 ? items.slice(0, 8) : undefined}
           onMovieClick={setSelectedMovie}
         />
 
         <MovieRow
           title="Korean Dramas (K-Dramas)"
           vertical="series"
+          items={items.length >= 8 ? items.slice(4, 12) : undefined}
           onMovieClick={setSelectedMovie}
         />
 
         <MovieRow
           title="Sci-Fi & Fantasy Epics"
           vertical="series"
+          items={items.length >= 12 ? items.slice(8, 16) : undefined}
           onMovieClick={setSelectedMovie}
         />
 
         <MovieRow
           title="Crime & Mystery Thrillers"
           vertical="series"
+          items={items.length >= 16 ? items.slice(12, 20) : undefined}
           onMovieClick={setSelectedMovie}
         />
       </div>

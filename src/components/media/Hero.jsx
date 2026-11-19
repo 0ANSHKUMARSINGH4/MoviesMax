@@ -1,32 +1,70 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
 import { Play, Info, Plus, Check, Volume2, VolumeX, Sparkles, Star } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import { motion, AnimatePresence } from "framer-motion";
-import { HERO_DATA } from "../../utils/movieData";
 import SmartImage from "./SmartImage";
-import { VERTICAL_THEMES, motionReveal, motionRevealContainer, motionRevealChild } from "../../utils/motion";
+import { normalizeMedia } from "../../utils/mediaUtils";
+import { addMovieToPlaylist, removeMovieFromPlaylist, fetchPlaylists } from "../../utils/movieApi";
+import { VERTICAL_THEMES, motionRevealContainer, motionRevealChild } from "../../utils/motion";
 
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
-const Hero = ({ vertical = "movies", items, onPlay }) => {
-  const { watchlist, toggleWatchlist } = useContext(GlobalContext);
+const Hero = ({ vertical = "movies", heroItems, items, onPlay }) => {
+  const navigate = useNavigate();
+  const { user, defaultPlaylist, isInWatchlist, setPlaylists } = useContext(GlobalContext);
   const [isMuted, setIsMuted] = useState(true);
-
-  // Use vertical-specific heroes from movieData or provided items
-  const heroItems =
-    items && items.length > 0
-      ? items
-      : HERO_DATA[vertical] || HERO_DATA.movies;
-
-  const theme = VERTICAL_THEMES[vertical] || VERTICAL_THEMES.movies;
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeItem = heroItems[activeIndex] || heroItems[0];
-  const activeInWatchlist = watchlist?.some((w) => String(w.id) === String(activeItem?.id));
-  const activeRating = activeItem?.vote_average || 8.8;
+
+  const rawList = heroItems && heroItems.length > 0 ? heroItems : items;
+
+  // If heroItems is undefined or empty: show a dark loading skeleton
+  if (!rawList || rawList.length === 0) {
+    return (
+      <div className="relative h-[85vh] sm:h-[90vh] md:h-[92vh] w-full text-white overflow-hidden select-none bg-black animate-pulse flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-blue-500 animate-spin" />
+      </div>
+    );
+  }
+
+  const normalizedItems = rawList.map((item) => normalizeMedia(item));
+  const theme = VERTICAL_THEMES[vertical] || VERTICAL_THEMES.movies;
+  const activeItem = normalizedItems[activeIndex] || normalizedItems[0];
+  const activeInWatchlist = user && activeItem?.id ? isInWatchlist(activeItem.id) : false;
+  const activeRating = activeItem?.vote_average || 8.5;
+
+  const handleWatchlistToggle = async (item) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!defaultPlaylist || !item) return;
+    try {
+      if (activeInWatchlist) {
+        await removeMovieFromPlaylist(defaultPlaylist._id, String(item.id));
+      } else {
+        await addMovieToPlaylist(defaultPlaylist._id, {
+          tmdbId: String(item.id),
+          title: item.title,
+          poster_path: item.poster_path,
+          backdrop_path: item.backdrop_path,
+          overview: item.overview,
+          vote_average: item.vote_average,
+          release_date: item.release_date,
+          genres: item.genres,
+          runtime: item.runtime || null,
+        });
+      }
+      const updated = await fetchPlaylists();
+      setPlaylists(updated);
+    } catch (e) {
+      console.error("Hero watchlist error:", e);
+    }
+  };
 
   return (
     <div className="relative h-[85vh] sm:h-[90vh] md:h-[92vh] w-full text-white overflow-hidden select-none bg-black">
@@ -41,11 +79,11 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
         pagination={{
           clickable: true,
           bulletActiveClass: `swiper-pagination-bullet-active ${theme.activeBullet} !w-9 !rounded-full transition-all duration-300`,
-          bulletClass: "swiper-pagination-bullet !bg-white/40 !w-2.5 !h-1.5 !rounded-full transition-all duration-300"
+          bulletClass: "swiper-pagination-bullet !bg-white/40 !w-2.5 !h-1.5 !rounded-full transition-all duration-300",
         }}
         className="h-full w-full"
       >
-        {heroItems.map((item, index) => {
+        {normalizedItems.map((item, index) => {
           return (
             <SwiperSlide key={item.id || index} className="relative h-full w-full group/hero">
               {/* 1. CINEMATIC BACKDROP IMAGE WITH KEN BURNS EFFECT */}
@@ -60,7 +98,7 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
                   imgClassName="animate-kenburns object-cover object-center"
                 />
 
-                {/* MULTI-DIRECTIONAL AMBIENT GRADIENTS (Zero harsh cutoffs) */}
+                {/* MULTI-DIRECTIONAL AMBIENT GRADIENTS */}
                 <div className={`absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t ${theme.ambientMask} to-transparent`} />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/40 to-transparent w-full md:w-3/4" />
                 <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/85 to-transparent" />
@@ -72,7 +110,7 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
         })}
       </Swiper>
 
-      {/* 2. HERO CONTENT PANEL (Overlaid outside Swiper to fix cross-fade overlap) */}
+      {/* 2. HERO CONTENT PANEL */}
       <div className="absolute bottom-16 sm:bottom-24 left-0 w-full container-mx z-20 pointer-events-none">
         <AnimatePresence mode="wait">
           <motion.div
@@ -89,15 +127,15 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
               className="flex items-center gap-2.5 flex-wrap"
             >
               <span className={`px-3 py-1 rounded-full text-meta uppercase ${theme.tagBg} text-white shadow-lg`}>
-                {activeItem?.tag || "🔥 Featured"}
+                {activeItem?.category || "🔥 Featured"}
               </span>
 
-              {activeItem?.sentiment && (
+              {activeItem?.vote_average && (
                 <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-meta border backdrop-blur-md ${theme.badgeColor}`}>
                   <Sparkles size={12} />
-                  <span>{activeItem.sentiment.score} Sentiment</span>
+                  <span>{Number(activeItem.vote_average).toFixed(1)} Rating</span>
                   <span className="opacity-60">•</span>
-                  <span>{activeItem.sentiment.label}</span>
+                  <span>Popular</span>
                 </span>
               )}
 
@@ -124,7 +162,7 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
               </span>
               <span className="text-gray-500">•</span>
               <span className="border border-white/30 bg-white/5 backdrop-blur-sm px-2 py-0.5 rounded">16+</span>
-              <span>{activeItem?.release_date ? activeItem.release_date.slice(0, 4) : "2024"}</span>
+              <span>{activeItem?.release_date ? activeItem.release_date.slice(0, 4) : "2025"}</span>
               <span className="border border-white/30 bg-white/5 backdrop-blur-sm px-2 py-0.5 rounded">4K ULTRA HD</span>
               {activeItem?.runtime && (
                 <span className="text-gray-300">{activeItem.runtime}</span>
@@ -160,12 +198,12 @@ const Hero = ({ vertical = "movies", items, onPlay }) => {
                 onClick={() => onPlay && onPlay(activeItem)}
                 className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 px-6 sm:px-8 py-3 sm:py-3.5 rounded-2xl font-bold text-sm sm:text-base transition-all active:scale-95 hover:border-white/40"
               >
-                <Info size={20} /> Details & Reviews
+                <Info size={20} /> Details &amp; Reviews
               </button>
 
               {/* Watchlist Toggle */}
               <button
-                onClick={() => toggleWatchlist(activeItem)}
+                onClick={() => handleWatchlistToggle(activeItem)}
                 className={`p-3 sm:p-3.5 rounded-2xl border backdrop-blur-md transition-all active:scale-95 ${
                   activeInWatchlist
                     ? `${theme.btnBg} text-white shadow-lg border-transparent`
