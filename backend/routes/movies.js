@@ -45,6 +45,7 @@ router.get('/discover', async (req, res, next) => {
     } else if (vertical === 'anime') {
       endpoint = `${TMDB_BASE}/discover/tv`;
       params.with_genres = 16;
+      params.with_original_language = 'ja';
     } else {
       endpoint = `${TMDB_BASE}/discover/movie`;
     }
