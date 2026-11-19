@@ -1,146 +1,115 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { fetchMoviesByCategory } from "../../utils/movieApi";
-import { CATEGORY_CATALOG } from "../../utils/movieData";
+import { fetchCategoryMovies, fetchMoviesByCategory } from "../../utils/movieApi";
 import MovieCard from "./MovieCard";
-import Section from "../layout/Section";
 
 const MovieRow = ({
   title,
-  endpoint,
-  isJikan = false,
-  vertical = "movies",
+  categoryKey,
   items,
   onMovieClick,
 }) => {
   const [movies, setMovies] = useState(items || []);
+  const [loading, setLoading] = useState(!items || items.length === 0);
   const rowRef = useRef(null);
 
   useEffect(() => {
     if (items && items.length > 0) {
       setMovies(items);
+      setLoading(false);
       return;
     }
 
     let isMounted = true;
-    const fetchMovies = async () => {
+    const load = async () => {
+      setLoading(true);
       try {
         let results = [];
-        if (isJikan && endpoint) {
-          try {
-            const res = await axios.get(`https://api.jikan.moe/v4${endpoint}`, { timeout: 3500 });
-            if (res.data?.data && res.data.data.length > 0) {
-              results = res.data.data.map((anime) => ({
-                id: anime.mal_id,
-                title: anime.title,
-                poster_path: anime.images.jpg.large_image_url,
-                backdrop_path: anime.images.jpg.large_image_url,
-                vote_average: anime.score || 8.6,
-                isJikan: true,
-                category: "Anime",
-                release_date: anime.aired?.from ? String(anime.aired.from).slice(0, 4) : "2024"
-              }));
-            }
-          } catch (e) {
-            results = CATEGORY_CATALOG["currently airing simulcasts"];
-          }
+        if (categoryKey) {
+          results = await fetchCategoryMovies(categoryKey);
         } else {
           results = await fetchMoviesByCategory(title);
         }
-
-        if (isMounted) {
-          if (results && results.length > 0) {
-            setMovies(results);
-          } else {
-            setMovies(CATEGORY_CATALOG["trending blockbusters"]);
-          }
+        if (isMounted && results) {
+          setMovies(results);
         }
-      } catch {
-        if (isMounted) {
-          setMovies(CATEGORY_CATALOG["trending blockbusters"]);
-        }
+      } catch (err) {
+        console.error(`Error loading row ${title}:`, err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
 
-    fetchMovies();
+    load();
     return () => {
       isMounted = false;
     };
-  }, [endpoint, title, isJikan, items]);
+  }, [items, categoryKey, title]);
 
   const handleScroll = (direction) => {
-    if (rowRef.current) {
-      const scrollAmount = rowRef.current.clientWidth * 0.75;
-      rowRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
+    if (!rowRef.current) return;
+    const scrollAmount = rowRef.current.clientWidth * 0.75;
+    rowRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
   };
 
-  const accentColor = {
-    movies: "bg-blue-600 shadow-[0_0_10px_#2563eb]",
-    series: "bg-purple-600 shadow-[0_0_10px_#9333ea]",
-    anime: "bg-orange-600 shadow-[0_0_10px_#ea580c]",
-    sports: "bg-emerald-600 shadow-[0_0_10px_#10b981]",
-    esports: "bg-pink-600 shadow-[0_0_10px_#ec4899]",
-  }[vertical] || (isJikan ? "bg-orange-600 shadow-[0_0_10px_#ea580c]" : "bg-blue-600 shadow-[0_0_10px_#2563eb]");
+  if (!loading && (!movies || movies.length === 0)) {
+    return null;
+  }
 
   return (
-    <Section as="section" className="relative py-sp-4 group/row select-none">
-      {/* SECTION HEADER */}
-      <div className="flex items-center justify-between mb-sp-3">
-        <div className="flex items-center gap-sp-1">
-          <div className={`w-1 h-5 rounded-full ${accentColor}`} />
-          <h2 className="text-section font-display flex items-center gap-sp-1">
-            {title}
-            {isJikan && (
-              <span className="text-meta font-black uppercase tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full">
-                Simulcast
-              </span>
-            )}
-          </h2>
+    <div className="relative group/row my-4 sm:my-6">
+      {/* ROW TITLE */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2 flex items-center justify-between">
+        <h3 className="text-base sm:text-xl font-bold text-white tracking-wide flex items-center gap-2">
+          {title}
+        </h3>
+      </div>
+
+      {/* ROW CAROUSEL WRAPPER */}
+      <div className="relative">
+        {/* LEFT SCROLL CHEVRON */}
+        <button
+          onClick={() => handleScroll("left")}
+          className="absolute left-0 top-0 bottom-0 w-10 sm:w-12 bg-black/60 hover:bg-black/90 text-white z-40 flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-opacity duration-200"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft size={28} />
+        </button>
+
+        {/* SCROLLABLE TRACK */}
+        <div
+          ref={rowRef}
+          className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth px-4 sm:px-6 lg:px-8 py-2"
+        >
+          {loading
+            ? Array.from({ length: 7 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex-none w-36 sm:w-44 md:w-52 aspect-[2/3] rounded-md bg-zinc-800 animate-pulse"
+                />
+              ))
+            : movies.map((movie) => (
+                <MovieCard
+                  key={movie.id}
+                  movie={movie}
+                  onMovieClick={onMovieClick}
+                />
+              ))}
         </div>
 
-        <span className="text-meta text-gray-400 hover:text-white font-semibold cursor-pointer transition-colors hidden sm:inline">
-          Explore All →
-        </span>
+        {/* RIGHT SCROLL CHEVRON */}
+        <button
+          onClick={() => handleScroll("right")}
+          className="absolute right-0 top-0 bottom-0 w-10 sm:w-12 bg-black/60 hover:bg-black/90 text-white z-40 flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-opacity duration-200"
+          aria-label="Scroll right"
+        >
+          <ChevronRight size={28} />
+        </button>
       </div>
-
-      {/* FULL-HEIGHT EDGE CAROUSEL HANDLES */}
-      <button
-        onClick={() => handleScroll("left")}
-        className="hidden md:flex absolute left-0 top-14 bottom-8 w-10 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-r border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
-        title="Scroll Left"
-      >
-        <ChevronLeft size={28} />
-      </button>
-
-      <button
-        onClick={() => handleScroll("right")}
-        className="hidden md:flex absolute right-0 top-14 bottom-8 w-10 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-l border-white/10 text-white items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all hover:scale-105 active:scale-95"
-        title="Scroll Right"
-      >
-        <ChevronRight size={28} />
-      </button>
-
-      {/* HORIZONTAL CAROUSEL CONTAINER */}
-      <div
-        ref={rowRef}
-        className="flex gap-sp-3 overflow-x-auto pb-sp-2 pt-1 custom-scrollbar no-scrollbar scroll-smooth"
-      >
-        {movies.map((movie, index) => (
-          <MovieCard
-            key={`${movie.id || movie.title}-${index}`}
-            movie={movie}
-            onMovieClick={onMovieClick}
-            isAnime={isJikan}
-            vertical={vertical}
-          />
-        ))}
-      </div>
-    </Section>
+    </div>
   );
 };
 

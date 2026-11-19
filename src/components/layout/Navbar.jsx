@@ -1,8 +1,16 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { Search, Bookmark, Bell, LayoutGrid } from "lucide-react";
+import { Search, Bookmark, Bell, X, LogOut, User as UserIcon } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
 import Logo from "./Logo";
+
+const NAV_LINKS = [
+  { name: "Home", path: "/" },
+  { name: "TV Shows", path: "/webseries" },
+  { name: "Movies", path: "/movies" },
+  { name: "Anime", path: "/anime" },
+  { name: "My List", path: "/watchlist" },
+];
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,17 +23,9 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isDarkBgNavbar =
-    location.pathname === "/" ||
-    location.pathname === "/webseries" ||
-    location.pathname === "/anime" ||
-    location.pathname === "/esports" ||
-    location.pathname === "/sports" ||
-    (location.pathname === "/movies" && !isScrolled);
-
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+      setIsScrolled(window.scrollY > 25);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -68,203 +68,145 @@ const Navbar = () => {
     }
   };
 
-  let navLinks = [];
-  switch (location.pathname) {
-    case "/movies":
-      navLinks = [
-        { name: "Hub", path: "/" },
-        { name: "Trending", path: "/movies#trending" },
-        { name: "Top Rated", path: "/movies#top" },
-        { name: "Action", path: "/movies#action" },
-      ];
-      break;
-    case "/webseries":
-      navLinks = [
-        { name: "Hub", path: "/" },
-        { name: "Western", path: "/webseries#western" },
-        { name: "K-Dramas", path: "/webseries#kdrama" },
-        { name: "Sci-Fi", path: "/webseries#scifi" },
-      ];
-      break;
-    case "/anime":
-      navLinks = [
-        { name: "Hub", path: "/" },
-        { name: "Classics", path: "/anime#classics" },
-        { name: "Simulcasts", path: "/anime#simulcasts" },
-        { name: "Movies", path: "/anime#movies" },
-      ];
-      break;
-    case "/sports":
-      navLinks = [
-        { name: "Hub", path: "/" },
-        { name: "Live Now", path: "/sports#live" },
-        { name: "News", path: "/sports#news" },
-        { name: "Leaderboards", path: "/sports#leaderboards" },
-      ];
-      break;
-    case "/esports":
-      navLinks = [
-        { name: "Hub", path: "/" },
-        { name: "Tournaments", path: "/esports#live" },
-        { name: "News", path: "/esports#news" },
-        { name: "Top Games", path: "/esports#games" },
-      ];
-      break;
-    case "/explore":
-    case "/watchlist":
-    case "/search":
-      navLinks = [
-        { name: "Hub", path: "/" },
-        { name: "Movies", path: "/movies" },
-        { name: "Series", path: "/webseries" },
-        { name: "Anime", path: "/anime" },
-      ];
-      break;
-    case "/":
-    default:
-      navLinks = [];
-      break;
-  }
-
-  if (location.pathname === "/") return null;
+  const watchlistCount = defaultPlaylist?.movies?.length || 0;
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
         isScrolled
-          ? "bg-dark-main/90 backdrop-blur-2xl shadow-2xl border-b border-white/10"
-          : "bg-gradient-to-b from-dark-main/95 via-dark-main/60 to-transparent pt-1"
+          ? "bg-[#141414] shadow-2xl border-b border-white/5"
+          : "bg-gradient-to-b from-black/90 via-black/50 to-transparent"
       }`}
     >
-      <div className="container-mx h-20 flex items-center justify-between gap-4">
-        {/* LEFT: 4-DOT ICON & LOGO */}
-        <div className="flex items-center gap-6 md:gap-8">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate("/explore")}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all"
-              title="Browse Categories"
-            >
-              <LayoutGrid size={17} />
-            </button>
-            <Logo isHomeTop={isDarkBgNavbar} />
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+        {/* LEFT: BRAND LOGO & NETFLIX NAV LINKS */}
+        <div className="flex items-center gap-6 md:gap-10">
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#E50914] group-hover:scale-105 transition-transform duration-200">
+              MOVIES<span className="text-white">MAX</span>
+            </span>
+          </Link>
 
-          {/* Desktop Navigation Links (From Video Frame 00:00) */}
-          <div className="hidden md:flex items-center gap-1.5">
-            {navLinks.map((link) => {
-              const isActive = (location.pathname + location.hash) === link.path || location.pathname === link.path && !location.hash && !link.path.includes('#');
+          {/* DESKTOP NAV LINKS */}
+          <ul className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium">
+            {NAV_LINKS.map((link) => {
+              const isActive = location.pathname === link.path;
               return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`relative px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-all ${
-                    isActive
-                      ? "text-white font-bold"
-                      : "text-gray-400 hover:text-gray-200"
-                  }`}
-                >
-                  {link.name}
-                  {/* Active Indicator Underline Pill */}
-                  {isActive && (
-                    <span className="absolute bottom-0 inset-x-2 h-0.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-[0_0_8px_#8b5cf6]" />
-                  )}
-                </Link>
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className={`transition-colors duration-200 ${
+                      isActive
+                        ? "text-white font-bold"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
 
-        {/* RIGHT: SEARCH, BELL, WATCHLIST, THEME TOGGLE, AVATAR */}
-        <div className="flex items-center gap-3">
-          {/* Desktop Search Form */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className={`relative hidden sm:flex items-center transition-all duration-300 ${
-              isSearchOpen ? "w-64 md:w-72" : "w-44 md:w-56"
-            }`}
-          >
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchOpen(true)}
-              onBlur={() => !searchQuery && setIsSearchOpen(false)}
-              placeholder="Search movies, series..."
-              className="w-full py-1.5 pl-9 pr-8 text-xs rounded-full bg-dark-elevated border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner"
-            />
-            <Search
-              size={14}
-              className="absolute left-3 text-gray-400 pointer-events-none"
-            />
-            {!isSearchOpen && !searchQuery && (
-              <span className="absolute right-2.5 px-1.5 py-0.5 rounded text-meta font-mono text-gray-400 border border-white/10 pointer-events-none">
-                /
-              </span>
+        {/* RIGHT: SEARCH, WATCHLIST, NOTIFICATIONS & PROFILE */}
+        <div className="flex items-center gap-3 sm:gap-5">
+          {/* EXPANDABLE NETFLIX SEARCH */}
+          <div className="relative flex items-center">
+            {isSearchOpen ? (
+              <form
+                onSubmit={handleSearchSubmit}
+                className="flex items-center bg-black/80 border border-white/30 rounded px-2.5 py-1.5 transition-all duration-300 w-44 sm:w-64"
+              >
+                <Search size={16} className="text-zinc-400 mr-2 flex-shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Titles, people, genres..."
+                  className="bg-transparent text-white text-xs sm:text-sm focus:outline-none w-full placeholder-zinc-500"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="text-zinc-400 hover:text-white ml-1.5 flex-shrink-0"
+                >
+                  <X size={15} />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="text-zinc-300 hover:text-white p-2 transition-colors duration-200"
+                title="Search (Press /)"
+                aria-label="Search"
+              >
+                <Search size={20} />
+              </button>
             )}
-          </form>
+          </div>
 
-          {/* Notification Bell (From Video Frame 00:00) */}
-          <button
-            onClick={() => navigate("/watchlist")}
-            className="relative p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-colors"
-            title="Notifications"
-          >
-            <Bell size={16} />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_6px_#8b5cf6]" />
-          </button>
-
-          {/* Desktop Watchlist Icon */}
+          {/* WATCHLIST QUICK SHORTCUT */}
           <Link
             to="/watchlist"
-            className="relative hidden md:flex p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-colors"
+            className="relative text-zinc-300 hover:text-white p-2 transition-colors duration-200 hidden xs:flex items-center"
             title="My Watchlist"
           >
-            <Bookmark size={16} />
-            {defaultPlaylist?.movies?.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-meta font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md shadow-purple-600/40">
-                {defaultPlaylist.movies.length > 99 ? "99+" : defaultPlaylist.movies.length}
+            <Bookmark size={20} />
+            {watchlistCount > 0 && (
+              <span className="absolute top-1 right-1 bg-[#E50914] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {watchlistCount > 9 ? "9+" : watchlistCount}
               </span>
             )}
           </Link>
 
-          {/* User Account / Sign In */}
+          {/* NOTIFICATION BELL */}
+          <button
+            className="text-zinc-300 hover:text-white p-2 transition-colors duration-200 hidden sm:block"
+            title="Notifications"
+          >
+            <Bell size={20} />
+          </button>
+
+          {/* USER AVATAR & DROPDOWN */}
           {user ? (
             <div className="relative" ref={userMenuRef}>
               <button
-                onClick={() => setIsUserMenuOpen((prev) => !prev)}
-                className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-[1.5px] shadow-md shadow-blue-500/20 hover:scale-105 transition-transform focus:outline-none flex items-center justify-center"
-                title={user.name || "User account"}
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 focus:outline-none group"
               >
-                <div className="w-full h-full rounded-full bg-dark-card flex items-center justify-center text-white text-xs font-bold uppercase">
-                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded bg-[#E50914] text-white font-bold flex items-center justify-center text-sm shadow-md group-hover:ring-2 group-hover:ring-white/40 transition-all">
+                  {user.name ? user.name.slice(0, 2).toUpperCase() : "U"}
                 </div>
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-dark-card border border-white/10 rounded-2xl shadow-2xl py-2 z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-4 py-2 border-b border-white/10">
-                    <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                    <p className="text-[11px] text-gray-400 truncate">{user.email}</p>
+                <div className="absolute right-0 mt-3 w-56 bg-[#181818] border border-zinc-800 rounded-md shadow-2xl py-2 z-50 text-sm">
+                  <div className="px-4 py-2 border-b border-zinc-800">
+                    <p className="text-white font-semibold truncate">{user.name}</p>
+                    <p className="text-zinc-400 text-xs truncate">{user.email}</p>
                   </div>
+
                   <Link
                     to="/watchlist"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
                   >
-                    <Bookmark size={14} />
-                    My Watchlist
+                    <Bookmark size={16} />
+                    <span>My Watchlist ({watchlistCount})</span>
                   </Link>
+
                   <button
                     onClick={() => {
                       setIsUserMenuOpen(false);
                       logout();
-                      navigate("/");
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-red-400 hover:bg-zinc-800 hover:text-red-300 transition-colors text-left"
                   >
-                    Sign Out
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
                   </button>
                 </div>
               )}
@@ -272,7 +214,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/login"
-              className="px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-md shadow-blue-600/20"
+              className="bg-[#E50914] hover:bg-[#b80710] text-white text-xs sm:text-sm font-bold px-4 py-1.5 sm:px-5 sm:py-2 rounded transition-all duration-200 shadow-lg"
             >
               Sign In
             </Link>

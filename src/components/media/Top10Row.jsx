@@ -1,210 +1,196 @@
-import { useRef, useContext } from "react";
-import { Play, Plus, Check, ChevronLeft, ChevronRight, Star, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef, useContext } from "react";
+import { Play, Plus, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
-import { TOP10_DATA } from "../../utils/movieData";
-import SmartImage from "./SmartImage";
-import Section from "../layout/Section";
-import { motionHover } from "../../utils/motion";
+import { fetchCategoryMovies } from "../../utils/movieApi";
+import { normalizeMedia } from "../../utils/mediaUtils";
+import { addMovieToPlaylist, removeMovieFromPlaylist, fetchPlaylists } from "../../utils/movieApi";
 
 const Top10Row = ({
-  vertical = "movies",
-  title,
+  title = "Top 10 in Movies Today",
+  categoryKey = "top-10",
   items,
-  onMovieClick
+  onMovieClick,
 }) => {
-  const { watchlist, toggleWatchlist } = useContext(GlobalContext);
+  const navigate = useNavigate();
+  const { user, defaultPlaylist, isInWatchlist, setPlaylists } = useContext(GlobalContext);
+  const [movies, setMovies] = useState(items || []);
+  const [loading, setLoading] = useState(!items || items.length === 0);
   const rowRef = useRef(null);
 
-  const fallbackList = TOP10_DATA[vertical] || TOP10_DATA.movies;
-  const top10List = items && items.length >= 5 ? items.slice(0, 10) : fallbackList;
-
-  const verticalTheme = {
-    movies: {
-      accent: "bg-blue-600 shadow-[0_0_10px_#2563eb]",
-      numeralStroke: "rgba(96, 165, 250, 0.45)",
-      shadow: "rgba(37, 99, 235, 0.35)",
-      pill: "text-blue-400 bg-blue-500/10 border-blue-500/20"
-    },
-    series: {
-      accent: "bg-purple-600 shadow-[0_0_10px_#9333ea]",
-      numeralStroke: "rgba(192, 132, 252, 0.45)",
-      shadow: "rgba(147, 51, 234, 0.35)",
-      pill: "text-purple-400 bg-purple-500/10 border-purple-500/20"
-    },
-    anime: {
-      accent: "bg-orange-600 shadow-[0_0_10px_#ea580c]",
-      numeralStroke: "rgba(251, 146, 60, 0.45)",
-      shadow: "rgba(234, 88, 12, 0.35)",
-      pill: "text-orange-400 bg-orange-500/10 border-orange-500/20"
+  useEffect(() => {
+    if (items && items.length > 0) {
+      setMovies(items.slice(0, 10));
+      setLoading(false);
+      return;
     }
-  }[vertical] || {
-    accent: "bg-blue-600 shadow-[0_0_10px_#2563eb]",
-    numeralStroke: "rgba(96, 165, 250, 0.45)",
-    shadow: "rgba(37, 99, 235, 0.35)",
-    pill: "text-blue-400 bg-blue-500/10 border-blue-500/20"
-  };
 
-  const displayTitle =
-    title ||
-    `Top 10 All Time (Sentiment Analysis & Verified Ratings)`;
+    let isMounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const results = await fetchCategoryMovies(categoryKey);
+        if (isMounted && results) {
+          setMovies(results.slice(0, 10));
+        }
+      } catch (e) {
+        console.error("Top10Row fetch error:", e);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [items, categoryKey]);
 
   const handleScroll = (direction) => {
-    if (rowRef.current) {
-      const scrollAmount = rowRef.current.clientWidth * 0.75;
-      rowRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
+    if (!rowRef.current) return;
+    const scrollAmount = rowRef.current.clientWidth * 0.75;
+    rowRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  const handleWatchlist = async (e, item) => {
+    e.stopPropagation();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!defaultPlaylist || !item) return;
+    const inWatchlist = isInWatchlist(item.id);
+    try {
+      if (inWatchlist) {
+        await removeMovieFromPlaylist(defaultPlaylist._id, String(item.id));
+      } else {
+        await addMovieToPlaylist(defaultPlaylist._id, {
+          tmdbId: String(item.id),
+          title: item.title,
+          poster_path: item.poster_path,
+          backdrop_path: item.backdrop_path,
+          overview: item.overview,
+          vote_average: item.vote_average,
+          release_date: item.release_date,
+          genres: item.genres,
+        });
+      }
+      const updated = await fetchPlaylists();
+      setPlaylists(updated);
+    } catch (err) {
+      console.error("Top 10 watchlist toggle error:", err);
     }
   };
 
+  if (!loading && (!movies || movies.length === 0)) return null;
+
   return (
-    <Section as="section" className="relative py-sp-4 group/top10 select-none">
-      {/* SECTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-sp-3 gap-sp-1">
-        <div className="flex items-center gap-3">
-          <div className={`w-1.5 h-6 rounded-full ${verticalTheme.accent}`} />
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white font-display uppercase flex items-center gap-2">
-              {displayTitle}
-            </h2>
-            <p className="text-xs text-gray-400 font-medium hidden sm:block">
-              Ranked through multi-source sentiment scraping: IMDb, Rotten Tomatoes, and community consensus
-            </p>
-          </div>
+    <div className="relative group/top10 my-6 sm:my-8">
+      {/* HEADER */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-3 flex items-center justify-between">
+        <h3 className="text-base sm:text-xl font-bold text-white tracking-wide flex items-center gap-2">
+          {title}
+        </h3>
+      </div>
+
+      {/* TRACK */}
+      <div className="relative">
+        <button
+          onClick={() => handleScroll("left")}
+          className="absolute left-0 top-0 bottom-0 w-10 sm:w-12 bg-black/60 hover:bg-black/90 text-white z-40 flex items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-opacity duration-200"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft size={28} />
+        </button>
+
+        <div
+          ref={rowRef}
+          className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth px-4 sm:px-6 lg:px-8 py-3"
+        >
+          {loading
+            ? Array.from({ length: 10 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex-none w-48 sm:w-56 aspect-[3/4] bg-zinc-800 rounded animate-pulse"
+                />
+              ))
+            : movies.map((movie, idx) => {
+                const item = normalizeMedia(movie);
+                const rank = idx + 1;
+                const inList = user && item?.id ? isInWatchlist(item.id) : false;
+
+                return (
+                  <div
+                    key={item.id || idx}
+                    onClick={() => onMovieClick && onMovieClick(item)}
+                    className="relative flex-none flex items-end cursor-pointer group/card select-none"
+                  >
+                    {/* GIANT NETFLIX 3D RANK NUMBER */}
+                    <div className="relative -mr-5 sm:-mr-8 z-0 pointer-events-none select-none">
+                      <span
+                        className="font-black text-[95px] sm:text-[130px] md:text-[150px] leading-none tracking-tighter"
+                        style={{
+                          color: "#141414",
+                          WebkitTextStroke: "4px #595959",
+                          textShadow: "0 0 15px rgba(0,0,0,0.9)",
+                        }}
+                      >
+                        {rank}
+                      </span>
+                    </div>
+
+                    {/* MOVIE POSTER */}
+                    <div className="relative aspect-[2/3] w-32 sm:w-40 md:w-44 rounded overflow-hidden bg-[#202020] shadow-xl border border-white/5 z-10 transition-transform duration-300 ease-out group-hover/card:scale-105 group-hover/card:shadow-2xl">
+                      <img
+                        src={item.poster_path || item.backdrop_path}
+                        alt={item.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* TOP BADGE */}
+                      <div className="absolute top-1.5 left-1.5 z-20">
+                        <span className="text-[#E50914] font-black text-xs drop-shadow">N</span>
+                      </div>
+
+                      {/* HOVER OVERLAY */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-20 flex flex-col justify-end p-2.5">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <button
+                            className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform"
+                            title="Play"
+                          >
+                            <Play size={14} fill="black" className="translate-x-0.5" />
+                          </button>
+                          <button
+                            onClick={(e) => handleWatchlist(e, item)}
+                            className="w-8 h-8 rounded-full bg-black/60 border border-white/40 text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+                            title={inList ? "In Watchlist" : "Add to List"}
+                          >
+                            {inList ? <Check size={14} className="text-[#46d369]" /> : <Plus size={14} />}
+                          </button>
+                        </div>
+                        <p className="text-white text-xs font-bold truncate">{item.title}</p>
+                        <p className="text-[#46d369] text-[10px] font-bold">Top {rank}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
         </div>
 
-        <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-meta font-black uppercase tracking-wider border backdrop-blur-md ${verticalTheme.pill}`}>
-          <Sparkles size={12} className="inline mr-1" /> Sentiment Verified
-        </span>
+        <button
+          onClick={() => handleScroll("right")}
+          className="absolute right-0 top-0 bottom-0 w-10 sm:w-12 bg-black/60 hover:bg-black/90 text-white z-40 flex items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-opacity duration-200"
+          aria-label="Scroll right"
+        >
+          <ChevronRight size={28} />
+        </button>
       </div>
-
-      {/* FULL-HEIGHT EDGE HANDLES */}
-      <button
-        onClick={() => handleScroll("left")}
-        className="hidden md:flex absolute left-2 md:left-4 top-16 bottom-8 w-12 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-r border-white/10 text-white items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-all hover:scale-105 active:scale-95"
-        title="Scroll Left"
-      >
-        <ChevronLeft size={28} />
-      </button>
-
-      <button
-        onClick={() => handleScroll("right")}
-        className="hidden md:flex absolute right-2 md:right-4 top-16 bottom-8 w-12 z-30 bg-black/80 hover:bg-black/95 backdrop-blur-md border-l border-white/10 text-white items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-all hover:scale-105 active:scale-95"
-        title="Scroll Right"
-      >
-        <ChevronRight size={28} />
-      </button>
-
-      {/* HORIZONTAL CAROUSEL WITH OVERLAPPING GIANT OUTLINE NUMBERS */}
-      <div
-        ref={rowRef}
-        className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-1 custom-scrollbar no-scrollbar scroll-smooth"
-      >
-        {top10List.map((item, index) => {
-          const rank = index + 1;
-          const inWatchlist = watchlist?.some((w) => String(w.id) === String(item.id));
-          const rating = item.vote_average || 8.8;
-
-          return (
-            <div
-              key={`${item.id}-${rank}`}
-              className="relative flex-none flex items-end group/item cursor-pointer select-none py-2"
-              onClick={() => onMovieClick && onMovieClick(item)}
-            >
-              {/* GIANT OUTLINE NUMERAL */}
-              <div className="relative -mr-6 sm:-mr-8 md:-mr-10 z-0 pointer-events-none">
-                <span
-                  className="font-black text-7xl sm:text-8xl md:text-9xl text-transparent tracking-tighter"
-                  style={{
-                    WebkitTextStroke: `2px ${verticalTheme.numeralStroke}`,
-                    textShadow: `0 0 30px ${verticalTheme.shadow}`,
-                    lineHeight: "0.85",
-                  }}
-                >
-                  {rank}
-                </span>
-              </div>
-
-              {/* POSTER CARD (Overlaps the number) */}
-              <motion.div
-                variants={motionHover}
-                initial="rest"
-                whileHover="hover"
-                className="relative z-10 w-36 sm:w-44 md:w-52 aspect-[2/3] rounded-2xl overflow-hidden bg-[#0c0d14] border border-white/10 group-hover/item:border-white/30 shadow-2xl will-change-transform"
-              >
-                <SmartImage
-                  src={item.poster_path}
-                  alt=""
-                  title={item.title}
-                  vertical={vertical}
-                  decorative
-                  className="absolute inset-0 w-full h-full"
-                  imgClassName="object-cover transition-transform duration-500 group-hover/item:scale-105"
-                />
-
-                {/* Gradient vignette */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-85 group-hover/item:opacity-95 transition-opacity" />
-                {/* TEXT SCRIM */}
-                <div className="absolute inset-0 z-10 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent 60%)" }} />
-
-                {/* Rating & Sentiment Badge */}
-                <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20">
-                  <div className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/10 text-meta font-bold text-yellow-400 flex items-center gap-1 shadow-sm">
-                    <Star size={11} fill="currentColor" /> {Number(rating).toFixed(1)}
-                  </div>
-
-                  {item.sentiment?.score && (
-                    <div className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-meta font-black tracking-wider shadow-sm backdrop-blur-md">
-                      {item.sentiment.score}
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom Metadata & Hover Action Overlay */}
-                <div className="absolute inset-x-0 bottom-0 p-3.5 space-y-1 z-20">
-                  <div className="flex items-center gap-2 mb-2 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMovieClick && onMovieClick(item);
-                      }}
-                      className="p-2 rounded-full bg-white text-black hover:bg-gray-200 shadow-lg transition-transform active:scale-95"
-                      title="Play Trailer"
-                    >
-                      <Play size={13} fill="black" className="translate-x-0.5" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWatchlist(item);
-                      }}
-                      className={`p-2 rounded-full border transition-transform active:scale-95 ${
-                        inWatchlist
-                          ? "bg-blue-600 border-blue-500 text-white"
-                          : "bg-black/60 border-white/20 text-white hover:bg-white/20"
-                      }`}
-                      title={inWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
-                    >
-                      {inWatchlist ? <Check size={13} /> : <Plus size={13} />}
-                    </button>
-                  </div>
-
-                  <h3 className="text-white font-bold text-xs sm:text-sm line-clamp-2 leading-snug">
-                    {item.title}
-                  </h3>
-                  <div className="flex items-center justify-between text-meta text-gray-400 font-semibold">
-                    <span>{item.release_date?.slice(0, 4)}</span>
-                    <span className="text-emerald-400 font-bold">{item.sentiment?.label || "Acclaimed"}</span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          );
-        })}
-      </div>
-    </Section>
+    </div>
   );
 };
 

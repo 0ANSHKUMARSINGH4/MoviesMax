@@ -20,6 +20,17 @@ export async function fetchTrendingMovies() {
   }
 }
 
+export async function fetchCategoryMovies(categoryKey) {
+  try {
+    const res = await fetch(`${BASE}/movies/category/${categoryKey}`);
+    const data = await res.json();
+    return data.results || [];
+  } catch (e) {
+    console.error(`fetchCategoryMovies(${categoryKey}) error:`, e);
+    return [];
+  }
+}
+
 export async function fetchMoviesByVertical(vertical) {
   try {
     const res = await fetch(`${BASE}/movies/discover?vertical=${vertical}`);
@@ -34,12 +45,19 @@ export async function fetchMoviesByVertical(vertical) {
 export async function fetchMoviesByCategory(categoryName) {
   try {
     const cat = (categoryName || '').toLowerCase();
-    const vertical = cat.includes('anime')
-      ? 'anime'
-      : cat.includes('series') || cat.includes('tv') || cat.includes('drama')
-      ? 'series'
-      : 'movies';
-    const res = await fetch(`${BASE}/movies/discover?vertical=${vertical}`);
+    let key = 'trending';
+    if (cat.includes('anime') && cat.includes('top')) key = 'top-anime';
+    else if (cat.includes('anime')) key = 'trending-anime';
+    else if (cat.includes('action')) key = 'action';
+    else if (cat.includes('sci-fi') || cat.includes('cyberpunk')) key = 'scifi';
+    else if (cat.includes('comedy')) key = 'comedy';
+    else if (cat.includes('horror')) key = 'horror';
+    else if (cat.includes('top rated') || cat.includes('classics')) key = 'top-movies';
+    else if (cat.includes('series') || cat.includes('tv')) key = 'popular-tv';
+    else if (cat.includes('kdrama') || cat.includes('korean')) key = 'kdrama';
+    else if (cat.includes('top 10')) key = 'top-10';
+
+    const res = await fetch(`${BASE}/movies/category/${key}`);
     const data = await res.json();
     return data.results || [];
   } catch (e) {
@@ -99,8 +117,9 @@ export async function fetchMe() {
     });
     if (!res.ok) return null;
     const data = await res.json();
-    return data.user;
+    return data.user || null;
   } catch (e) {
+    console.error('fetchMe error:', e);
     return null;
   }
 }
@@ -114,36 +133,18 @@ export async function fetchPlaylists() {
     const data = await res.json();
     return data.playlists || [];
   } catch (e) {
+    console.error('fetchPlaylists error:', e);
     return [];
-  }
-}
-
-export async function createPlaylist({ name, description }) {
-  const res = await fetch(`${BASE}/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify({ name, description }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Failed to create playlist');
-  return data.playlist;
-}
-
-export async function deletePlaylist(playlistId) {
-  const res = await fetch(`${BASE}/playlists/${playlistId}`, {
-    method: 'DELETE',
-    headers: authHeaders(),
-  });
-  if (!res.ok) {
-    const d = await res.json();
-    throw new Error(d.message);
   }
 }
 
 export async function addMovieToPlaylist(playlistId, movieData) {
   const res = await fetch(`${BASE}/playlists/${playlistId}/movies`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+    },
     body: JSON.stringify(movieData),
   });
   const data = await res.json();
@@ -156,10 +157,7 @@ export async function removeMovieFromPlaylist(playlistId, tmdbId) {
     method: 'DELETE',
     headers: authHeaders(),
   });
-  if (!res.ok) {
-    const d = await res.json();
-    throw new Error(d.message);
-  }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Failed to remove movie');
+  return data.playlist;
 }
-
-

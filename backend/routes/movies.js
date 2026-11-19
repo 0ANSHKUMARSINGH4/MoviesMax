@@ -5,14 +5,114 @@ const axios = require('axios');
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const API_KEY = process.env.TMDB_API_KEY || '5208094dcf313d93dd5f1f3acd69cced';
 
+function normalizeItem(item) {
+  return {
+    ...item,
+    id: String(item.id),
+    title: item.title || item.name || 'Untitled',
+    original_title: item.original_title || item.original_name || item.title || item.name || '',
+    release_date: item.release_date || item.first_air_date || '',
+    vote_average: item.vote_average ? Number(item.vote_average.toFixed(1)) : 8.0,
+    media_type: item.media_type || (item.first_air_date ? 'tv' : 'movie'),
+  };
+}
+
 // GET /api/movies/trending (public)
-// IMPORTANT: static routes must come before /:tmdbId
 router.get('/trending', async (req, res, next) => {
   try {
-    const { data } = await axios.get(`${TMDB_BASE}/trending/movie/week`, {
+    const { data } = await axios.get(`${TMDB_BASE}/trending/all/week`, {
       params: { api_key: API_KEY },
+      timeout: 6000,
     });
-    res.json(data);
+    const results = (data.results || []).map(normalizeItem);
+    res.json({ ...data, results });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/movies/category/:key (public) - Dedicated Netflix rows
+router.get('/category/:key', async (req, res, next) => {
+  try {
+    const { key } = req.params;
+    let endpoint = `${TMDB_BASE}/discover/movie`;
+    let params = { api_key: API_KEY, sort_by: 'popularity.desc' };
+
+    switch (key) {
+      case 'trending':
+        endpoint = `${TMDB_BASE}/trending/all/week`;
+        params = { api_key: API_KEY };
+        break;
+      case 'top-10':
+        endpoint = `${TMDB_BASE}/trending/all/day`;
+        params = { api_key: API_KEY };
+        break;
+      case 'popular-movies':
+        endpoint = `${TMDB_BASE}/movie/popular`;
+        break;
+      case 'top-movies':
+        endpoint = `${TMDB_BASE}/movie/top_rated`;
+        break;
+      case 'action':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 28;
+        break;
+      case 'scifi':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 878;
+        break;
+      case 'comedy':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 35;
+        break;
+      case 'horror':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 27;
+        break;
+      case 'thriller':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 53;
+        break;
+      case 'romance':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 10749;
+        break;
+      case 'popular-tv':
+      case 'trending-tv':
+        endpoint = `${TMDB_BASE}/tv/popular`;
+        break;
+      case 'top-tv':
+        endpoint = `${TMDB_BASE}/tv/top_rated`;
+        break;
+      case 'kdrama':
+        endpoint = `${TMDB_BASE}/discover/tv`;
+        params.with_original_language = 'ko';
+        break;
+      case 'trending-anime':
+        endpoint = `${TMDB_BASE}/discover/tv`;
+        params.with_genres = 16;
+        params.with_original_language = 'ja';
+        params.sort_by = 'popularity.desc';
+        break;
+      case 'top-anime':
+        endpoint = `${TMDB_BASE}/discover/tv`;
+        params.with_genres = 16;
+        params.with_original_language = 'ja';
+        params.sort_by = 'vote_average.desc';
+        params['vote_count.gte'] = 250;
+        break;
+      case 'anime-movies':
+        endpoint = `${TMDB_BASE}/discover/movie`;
+        params.with_genres = 16;
+        params.with_original_language = 'ja';
+        break;
+      default:
+        endpoint = `${TMDB_BASE}/discover/movie`;
+    }
+
+    const { data } = await axios.get(endpoint, { params, timeout: 6000 });
+    const results = (data.results || []).map(normalizeItem);
+    res.json({ ...data, results });
   } catch (err) {
     next(err);
   }
@@ -22,10 +122,13 @@ router.get('/trending', async (req, res, next) => {
 router.get('/search', async (req, res, next) => {
   try {
     const query = req.query.q || '';
+    if (!query.trim()) return res.json({ results: [] });
     const { data } = await axios.get(`${TMDB_BASE}/search/multi`, {
       params: { query, api_key: API_KEY },
+      timeout: 6000,
     });
-    res.json(data);
+    const results = (data.results || []).filter(i => i.backdrop_path || i.poster_path).map(normalizeItem);
+    res.json({ ...data, results });
   } catch (err) {
     next(err);
   }
@@ -50,15 +153,15 @@ router.get('/discover', async (req, res, next) => {
       endpoint = `${TMDB_BASE}/discover/movie`;
     }
 
-    const { data } = await axios.get(endpoint, { params });
-    res.json(data);
+    const { data } = await axios.get(endpoint, { params, timeout: 6000 });
+    const results = (data.results || []).map(normalizeItem);
+    res.json({ ...data, results });
   } catch (err) {
     next(err);
   }
 });
 
 // GET /api/movies/:tmdbId (public)
-// MUST be defined AFTER the static routes above
 router.get('/:tmdbId', async (req, res, next) => {
   try {
     const { tmdbId } = req.params;
@@ -66,26 +169,50 @@ router.get('/:tmdbId', async (req, res, next) => {
 
     try {
       const response = await axios.get(`${TMDB_BASE}/movie/${tmdbId}`, {
-        params: { api_key: API_KEY, append_to_response: 'videos,credits' },
+        params: { api_key: API_KEY, append_to_response: 'videos,credits,similar' },
+        timeout: 6000,
       });
       data = response.data;
     } catch (movieErr) {
-      // Fallback to TV
+      // Fallback to TV show
       const response = await axios.get(`${TMDB_BASE}/tv/${tmdbId}`, {
-        params: { api_key: API_KEY, append_to_response: 'videos,credits' },
+        params: { api_key: API_KEY, append_to_response: 'videos,credits,similar' },
+        timeout: 6000,
       });
       data = response.data;
     }
 
     const trailerKey =
       (data.videos && data.videos.results
-        ? data.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+        ? (data.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') ||
+           data.videos.results.find(v => v.site === 'YouTube'))
         : null
       )?.key || null;
 
-    const cast = data.credits && data.credits.cast ? data.credits.cast.slice(0, 10) : [];
+    const cast = data.credits && data.credits.cast
+      ? data.credits.cast.slice(0, 10).map(c => ({
+          id: c.id,
+          name: c.name,
+          character: c.character,
+          profile_path: c.profile_path ? `https://image.tmdb.org/t/p/w185${c.profile_path}` : null,
+        }))
+      : [];
 
-    res.json({ ...data, trailerKey, cast });
+    const director = data.credits && data.credits.crew
+      ? (data.credits.crew.find(c => c.job === 'Director')?.name || data.created_by?.[0]?.name || '')
+      : (data.created_by?.[0]?.name || '');
+
+    const similar = data.similar && data.similar.results
+      ? data.similar.results.slice(0, 6).map(normalizeItem)
+      : [];
+
+    res.json({
+      ...normalizeItem(data),
+      trailerKey,
+      cast,
+      director,
+      similar,
+    });
   } catch (err) {
     next(err);
   }
