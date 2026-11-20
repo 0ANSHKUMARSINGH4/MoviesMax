@@ -112,3 +112,25 @@ img {
   animation: shimmer 2s linear infinite;
   background-size: 200% 100%;
 }
+
+/* ── Infinite Quote Sliding Carousel ──────────────────────────── */
+@keyframes quoteMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-quote-slider {
+  display: flex;
+  width: max-content;
+  animation: quoteMarquee 42s linear infinite;
+  will-change: transform;
+}
+
+.animate-quote-slider:hover,
+.animate-quote-slider:focus-within {
+  animation-play-state: paused !important;
+}

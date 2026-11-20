@@ -11,39 +11,39 @@ const BentoDiscoveryGrid = ({ vertical = "movies", onMovieClick }) => {
   const verticalTheme = {
     movies: {
       accent: "text-blue-400",
-      borderGlow: "hover:border-blue-500/50 hover:shadow-blue-600/20",
+      borderGlow: "hover:border-blue-500/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]",
       pillBg: "bg-blue-600/20 text-blue-400 border-blue-500/30",
-      gradient: "from-blue-600/20 to-indigo-900/30"
+      gradient: "from-blue-600/20 to-blue-950/40"
     },
     series: {
-      accent: "text-purple-400",
-      borderGlow: "hover:border-purple-500/50 hover:shadow-purple-600/20",
-      pillBg: "bg-purple-600/20 text-purple-400 border-purple-500/30",
-      gradient: "from-purple-600/20 to-violet-900/30"
+      accent: "text-blue-400",
+      borderGlow: "hover:border-blue-500/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]",
+      pillBg: "bg-blue-600/20 text-blue-400 border-blue-500/30",
+      gradient: "from-blue-600/20 to-blue-950/40"
     },
     anime: {
-      accent: "text-orange-400",
-      borderGlow: "hover:border-orange-500/50 hover:shadow-orange-600/20",
-      pillBg: "bg-orange-600/20 text-orange-400 border-orange-500/30",
-      gradient: "from-orange-600/20 to-amber-900/30"
+      accent: "text-blue-400",
+      borderGlow: "hover:border-blue-500/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]",
+      pillBg: "bg-blue-600/20 text-blue-400 border-blue-500/30",
+      gradient: "from-blue-600/20 to-blue-950/40"
     },
     sports: {
-      accent: "text-emerald-400",
-      borderGlow: "hover:border-emerald-500/50 hover:shadow-emerald-600/20",
-      pillBg: "bg-emerald-600/20 text-emerald-400 border-emerald-500/30",
-      gradient: "from-emerald-600/20 to-teal-900/30"
+      accent: "text-blue-400",
+      borderGlow: "hover:border-blue-500/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]",
+      pillBg: "bg-blue-600/20 text-blue-400 border-blue-500/30",
+      gradient: "from-blue-600/20 to-blue-950/40"
     },
     esports: {
-      accent: "text-pink-400",
-      borderGlow: "hover:border-pink-500/50 hover:shadow-pink-600/20",
-      pillBg: "bg-pink-600/20 text-pink-400 border-pink-500/30",
-      gradient: "from-pink-600/20 to-fuchsia-900/30"
+      accent: "text-blue-400",
+      borderGlow: "hover:border-blue-500/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]",
+      pillBg: "bg-blue-600/20 text-blue-400 border-blue-500/30",
+      gradient: "from-blue-600/20 to-blue-950/40"
     }
   }[vertical] || {
     accent: "text-blue-400",
-    borderGlow: "hover:border-blue-500/50 hover:shadow-blue-600/20",
+    borderGlow: "hover:border-blue-500/60 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]",
     pillBg: "bg-blue-600/20 text-blue-400 border-blue-500/30",
-    gradient: "from-blue-600/20 to-indigo-900/30"
+    gradient: "from-blue-600/20 to-blue-950/40"
   };
 
   return (
