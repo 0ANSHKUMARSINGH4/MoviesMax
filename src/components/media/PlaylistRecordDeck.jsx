@@ -377,13 +377,13 @@ const PlaylistRecordDeck = ({ onPlay }) => {
   const inWatchlist = user && currentRecord?.tmdbId ? isInWatchlist(currentRecord.tmdbId) : false;
 
   // ==========================================================================
-  // CONTINUOUS INFINITE AUTO-SLIDING (Pauses on hover/touch)
+  // CONTINUOUS INFINITE AUTO-SLIDING (Pauses strictly when hovering on cards)
   // ==========================================================================
   useEffect(() => {
     if (isHovered) return;
     const interval = setInterval(() => {
       setTimelineIndex((prev) => prev + 1);
-    }, 4500);
+    }, 3200);
     return () => clearInterval(interval);
   }, [isHovered]);
 
@@ -462,10 +462,18 @@ const PlaylistRecordDeck = ({ onPlay }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 space-y-8">
         {/* 1. HEADER & SECTION OPTIONS (MOVIES • WEBSERIES • ANIME) */}
         <div className="text-center space-y-3 max-w-3xl mx-auto">
-          {/* Section Kicker Pill */}
+          {/* Section Kicker Pill with Live Auto-Slide Status */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-600/15 text-xs font-bold uppercase tracking-widest text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-            <Disc3 size={15} className="text-blue-400 animate-spin" style={{ animationDuration: "5s" }} />
+            <Disc3
+              size={15}
+              className={`text-blue-400 ${isHovered ? "" : "animate-spin"}`}
+              style={{ animationDuration: "5s" }}
+            />
             <span>Interactive Vinyl Record Deck</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <span className="text-[10px] text-gray-300 font-medium normal-case">
+              {isHovered ? "Paused on Card Hover" : "Auto-sliding"}
+            </span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white font-sans">
@@ -521,13 +529,7 @@ const PlaylistRecordDeck = ({ onPlay }) => {
         </div>
 
         {/* 2. THE 3D FAN-OUT INFINITE RECORD DECK CAROUSEL */}
-        <div
-          className="relative h-[430px] sm:h-[480px] w-full flex items-center justify-center select-none perspective-[1200px]"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onTouchStart={() => setIsHovered(true)}
-          onTouchEnd={() => setIsHovered(false)}
-        >
+        <div className="relative h-[430px] sm:h-[480px] w-full flex items-center justify-center select-none perspective-[1200px]">
           {/* Navigation Arrows (Electric Blue & White) */}
           <button
             onClick={handlePrev}
@@ -547,8 +549,14 @@ const PlaylistRecordDeck = ({ onPlay }) => {
             <ChevronRight size={22} />
           </button>
 
-          {/* Cards Stack (Continuous Infinite Fan-out Geometry) */}
-          <div className="relative w-64 sm:w-72 md:w-80 h-[380px] sm:h-[420px] flex items-center justify-center">
+          {/* Cards Stack (Continuous Infinite Fan-out Geometry - Pauses strictly when hovering over the cards) */}
+          <div
+            className="relative w-64 sm:w-72 md:w-80 h-[380px] sm:h-[420px] flex items-center justify-center"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+          >
             {visibleCards.map(({ continuousKey, offset, item }) => {
               const isCenter = offset === 0;
               const absOffset = Math.abs(offset);
@@ -570,6 +578,10 @@ const PlaylistRecordDeck = ({ onPlay }) => {
                 <motion.div
                   key={continuousKey}
                   onClick={() => handleCardClick(offset, item)}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  onTouchStart={() => setIsHovered(true)}
+                  onTouchEnd={() => setIsHovered(false)}
                   animate={{
                     x: xOffset,
                     rotateZ: rotateZ,
