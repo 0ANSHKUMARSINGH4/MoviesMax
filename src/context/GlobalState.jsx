@@ -52,7 +52,7 @@ export const GlobalProvider = ({ children }) => {
 
   const isInWatchlist = useCallback(
     (tmdbId) => {
-      if (!defaultPlaylist) return false;
+      if (!defaultPlaylist || !Array.isArray(defaultPlaylist.movies)) return false;
       return defaultPlaylist.movies.some((m) => String(m.tmdbId) === String(tmdbId));
     },
     [defaultPlaylist]

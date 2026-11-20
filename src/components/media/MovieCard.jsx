@@ -13,7 +13,7 @@ const MovieCard = ({ movie, onMovieClick }) => {
   if (!item) return null;
 
   const inWatchlist = user && item.id ? isInWatchlist(item.id) : false;
-  const matchPercentage = Math.min(99, Math.max(82, Math.round((item.vote_average || 8.0) * 10) + 4));
+  const matchScore = Math.min(99, Math.max(82, Math.round((item.vote_average || 8.0) * 10) + 4));
 
   const handleWatchlistToggle = async (e) => {
     e.stopPropagation();
