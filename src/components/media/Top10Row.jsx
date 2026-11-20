@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useContext } from "react";
-import { Play, Plus, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Play, Plus, Check, ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
 import { fetchCategoryMovies } from "../../utils/movieApi";
@@ -7,7 +7,7 @@ import { normalizeMedia } from "../../utils/mediaUtils";
 import { addMovieToPlaylist, removeMovieFromPlaylist, fetchPlaylists } from "../../utils/movieApi";
 
 const Top10Row = ({
-  title = "Top 10 in Movies Today",
+  title = "Top 10 Global Blockbusters",
   categoryKey = "top-10",
   items,
   onMovieClick,
@@ -88,33 +88,38 @@ const Top10Row = ({
   if (!loading && (!movies || movies.length === 0)) return null;
 
   return (
-    <div className="relative group/top10 my-6 sm:my-8">
-      {/* HEADER */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-3 flex items-center justify-between">
-        <h3 className="text-base sm:text-xl font-bold text-white tracking-wide flex items-center gap-2">
-          {title}
-        </h3>
+    <div className="relative group/top10 my-6 sm:my-10">
+      {/* HEADER WITH BLUE GLOW PILL */}
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+            <Trophy size={16} />
+          </div>
+          <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            {title}
+          </h3>
+        </div>
       </div>
 
       {/* TRACK */}
       <div className="relative">
         <button
           onClick={() => handleScroll("left")}
-          className="absolute left-0 top-0 bottom-0 w-10 sm:w-12 bg-black/60 hover:bg-black/90 text-white z-40 flex items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-opacity duration-200"
+          className="absolute left-0 top-0 bottom-0 w-12 bg-black/70 hover:bg-black/95 text-white z-40 flex items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-opacity duration-200"
           aria-label="Scroll left"
         >
-          <ChevronLeft size={28} />
+          <ChevronLeft size={30} />
         </button>
 
         <div
           ref={rowRef}
-          className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth px-4 sm:px-6 lg:px-8 py-3"
+          className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth px-5 sm:px-8 lg:px-12 py-3"
         >
           {loading
             ? Array.from({ length: 10 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex-none w-48 sm:w-56 aspect-[3/4] bg-zinc-800 rounded animate-pulse"
+                  className="flex-none w-48 sm:w-56 aspect-[3/4] bg-[#111827] rounded-2xl animate-pulse"
                 />
               ))
             : movies.map((movie, idx) => {
@@ -128,22 +133,22 @@ const Top10Row = ({
                     onClick={() => onMovieClick && onMovieClick(item)}
                     className="relative flex-none flex items-end cursor-pointer group/card select-none"
                   >
-                    {/* GIANT NETFLIX 3D RANK NUMBER */}
+                    {/* ELECTRIC BLUE STROKE RANK NUMBER */}
                     <div className="relative -mr-5 sm:-mr-8 z-0 pointer-events-none select-none">
                       <span
                         className="font-black text-[95px] sm:text-[130px] md:text-[150px] leading-none tracking-tighter"
                         style={{
-                          color: "#141414",
-                          WebkitTextStroke: "4px #595959",
-                          textShadow: "0 0 15px rgba(0,0,0,0.9)",
+                          color: "#0B1120",
+                          WebkitTextStroke: "4px rgba(96, 165, 250, 0.6)",
+                          textShadow: "0 0 20px rgba(59, 130, 246, 0.4)",
                         }}
                       >
                         {rank}
                       </span>
                     </div>
 
-                    {/* MOVIE POSTER */}
-                    <div className="relative aspect-[2/3] w-32 sm:w-40 md:w-44 rounded overflow-hidden bg-[#202020] shadow-xl border border-white/5 z-10 transition-transform duration-300 ease-out group-hover/card:scale-105 group-hover/card:shadow-2xl">
+                    {/* POSTER CARD */}
+                    <div className="relative aspect-[2/3] w-32 sm:w-40 md:w-44 rounded-2xl overflow-hidden bg-[#111827] shadow-xl border border-white/10 z-10 transition-all duration-300 ease-out group-hover/card:scale-105 group-hover/card:shadow-[0_0_25px_rgba(59,130,246,0.4)] group-hover/card:border-blue-500/60">
                       <img
                         src={item.poster_path || item.backdrop_path}
                         alt={item.title}
@@ -152,29 +157,31 @@ const Top10Row = ({
                       />
 
                       {/* TOP BADGE */}
-                      <div className="absolute top-1.5 left-1.5 z-20">
-                        <span className="text-[#E50914] font-black text-xs drop-shadow">N</span>
+                      <div className="absolute top-2 left-2 z-20">
+                        <span className="px-2 py-0.5 rounded-md bg-blue-600/90 text-[10px] font-black text-white shadow-md shadow-blue-600/40">
+                          #{rank}
+                        </span>
                       </div>
 
                       {/* HOVER OVERLAY */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-20 flex flex-col justify-end p-2.5">
-                        <div className="flex items-center gap-2 mb-1.5">
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120]/95 via-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-20 flex flex-col justify-end p-3">
+                        <div className="flex items-center gap-2 mb-2">
                           <button
-                            className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform"
-                            title="Play"
+                            className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                            title="Play Trailer"
                           >
                             <Play size={14} fill="black" className="translate-x-0.5" />
                           </button>
                           <button
                             onClick={(e) => handleWatchlist(e, item)}
-                            className="w-8 h-8 rounded-full bg-black/60 border border-white/40 text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+                            className="w-8 h-8 rounded-full bg-black/60 border border-white/40 text-white flex items-center justify-center hover:bg-blue-600/40 hover:border-blue-400 transition-all"
                             title={inList ? "In Watchlist" : "Add to List"}
                           >
-                            {inList ? <Check size={14} className="text-[#46d369]" /> : <Plus size={14} />}
+                            {inList ? <Check size={14} className="text-blue-400" /> : <Plus size={14} />}
                           </button>
                         </div>
                         <p className="text-white text-xs font-bold truncate">{item.title}</p>
-                        <p className="text-[#46d369] text-[10px] font-bold">Top {rank}</p>
+                        <p className="text-blue-400 text-[11px] font-bold">Top {rank} Worldwide</p>
                       </div>
                     </div>
                   </div>
@@ -184,10 +191,10 @@ const Top10Row = ({
 
         <button
           onClick={() => handleScroll("right")}
-          className="absolute right-0 top-0 bottom-0 w-10 sm:w-12 bg-black/60 hover:bg-black/90 text-white z-40 flex items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-opacity duration-200"
+          className="absolute right-0 top-0 bottom-0 w-12 bg-black/70 hover:bg-black/95 text-white z-40 flex items-center justify-center opacity-0 group-hover/top10:opacity-100 transition-opacity duration-200"
           aria-label="Scroll right"
         >
-          <ChevronRight size={28} />
+          <ChevronRight size={30} />
         </button>
       </div>
     </div>

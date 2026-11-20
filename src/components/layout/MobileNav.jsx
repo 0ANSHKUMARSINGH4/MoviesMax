@@ -7,13 +7,13 @@ import { motion } from "framer-motion";
 
 const MobileNav = () => {
   const location = useLocation();
-  const { watchlist } = useContext(GlobalContext);
+  const { defaultPlaylist } = useContext(GlobalContext);
 
   const navItems = [
     { name: "Home", path: "/", icon: Home },
-    { name: "Explore", path: "/explore", icon: Compass },
+    { name: "Movies", path: "/movies", icon: Compass },
     { name: "Search", path: "/search", icon: Search },
-    { name: "Watchlist", path: "/watchlist", icon: Bookmark, badge: watchlist?.length || 0 },
+    { name: "Watchlist", path: "/watchlist", icon: Bookmark, badge: defaultPlaylist?.movies?.length || 0 },
   ];
 
   if (location.pathname === "/") return null;

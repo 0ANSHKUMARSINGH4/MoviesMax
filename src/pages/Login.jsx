@@ -15,7 +15,7 @@ const InputField = ({ icon: Icon, type, placeholder, value, onChange, disabled, 
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className="w-full bg-[#181818] border border-zinc-700 rounded px-4 py-3 pl-10 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914] focus:ring-1 focus:ring-[#E50914] disabled:opacity-50 transition-all"
+      className="w-full bg-[#111827] border border-white/10 rounded-full px-4 py-3 pl-10 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 transition-all"
     />
     {rightElement && (
       <div className="absolute right-3.5 top-1/2 -translate-y-1/2">{rightElement}</div>
@@ -128,8 +128,8 @@ const Login = () => {
             onClick={() => switchTab('signin')}
             className={`flex-1 pb-3 text-sm font-semibold transition-all ${
               tab === 'signin'
-                ? 'text-white border-b-2 border-[#E50914] -mb-px'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'text-white border-b-2 border-blue-500 -mb-px'
+                : 'text-gray-400 hover:text-gray-200'
             }`}
           >
             Sign In
@@ -138,8 +138,8 @@ const Login = () => {
             onClick={() => switchTab('register')}
             className={`flex-1 pb-3 text-sm font-semibold transition-all ${
               tab === 'register'
-                ? 'text-white border-b-2 border-[#E50914] -mb-px'
-                : 'text-zinc-500 hover:text-zinc-300'
+                ? 'text-white border-b-2 border-blue-500 -mb-px'
+                : 'text-gray-400 hover:text-gray-200'
             }`}
           >
             Create Account
@@ -179,7 +179,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full py-3 rounded bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-sm transition-all shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="mt-2 w-full py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -248,7 +248,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full py-3 rounded bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-sm transition-all shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="mt-2 w-full py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

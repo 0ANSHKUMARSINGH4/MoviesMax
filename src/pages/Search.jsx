@@ -32,46 +32,46 @@ const Search = () => {
   }, [query]);
 
   return (
-    <div className="min-h-screen pt-28 px-4 sm:px-8 md:px-12 pb-24 bg-[#141414] text-white">
+    <div className="min-h-screen pt-28 px-5 sm:px-8 md:px-12 pb-24 bg-[#0B1120] text-white">
       {/* SEARCH RESULTS TITLE */}
-      <div className="border-b border-zinc-800 pb-4 mb-6 max-w-7xl mx-auto">
-        <h1 className="text-xl sm:text-3xl font-black text-white">
+      <div className="border-b border-white/10 pb-5 mb-6 max-w-[1440px] mx-auto">
+        <h1 className="text-xl sm:text-3xl font-black text-white font-display">
           {query ? (
-            <>Search Results for: <span className="text-[#E50914]">"{query}"</span></>
+            <>Search Results for: <span className="text-blue-400">"{query}"</span></>
           ) : (
-            <span className="flex items-center gap-2"><SearchIcon size={28} /> Search</span>
+            <span className="flex items-center gap-2"><SearchIcon size={26} className="text-blue-400" /> Search Titles</span>
           )}
         </h1>
         {query && (
-          <p className="text-zinc-400 text-xs sm:text-sm mt-1">
-            Found {movies.length} {movies.length === 1 ? "title" : "titles"}
+          <p className="text-gray-400 text-xs sm:text-sm mt-1">
+            Found {movies.length} {movies.length === 1 ? "title" : "titles"} across TMDB global cinema databases
           </p>
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1440px] mx-auto">
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center text-center space-y-3">
-            <Loader2 size={36} className="animate-spin text-[#E50914]" />
-            <p className="text-zinc-400 font-semibold text-sm">Searching titles...</p>
+            <Loader2 size={36} className="animate-spin text-blue-500" />
+            <p className="text-gray-400 font-semibold text-sm">Searching titles...</p>
           </div>
         ) : !query ? (
           <div className="py-24 flex flex-col items-center justify-center text-center space-y-3 max-w-md mx-auto">
-            <div className="w-14 h-14 rounded-full bg-zinc-800 text-zinc-500 flex items-center justify-center">
-              <SearchIcon size={24} />
+            <div className="w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shadow-[0_0_25px_rgba(59,130,246,0.15)]">
+              <SearchIcon size={28} />
             </div>
             <h2 className="text-xl font-bold text-white">Find your next favorite title</h2>
-            <p className="text-zinc-400 text-sm">
+            <p className="text-gray-400 text-sm">
               Search by title, genre, or keyword using the top navigation bar.
             </p>
           </div>
         ) : movies.length === 0 ? (
           <div className="py-24 flex flex-col items-center justify-center text-center space-y-3 max-w-md mx-auto">
-            <div className="w-14 h-14 rounded-full bg-zinc-800 text-zinc-500 flex items-center justify-center">
-              <SearchIcon size={24} />
+            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 text-gray-400 flex items-center justify-center">
+              <SearchIcon size={28} />
             </div>
             <h2 className="text-xl font-bold text-white">No results found for "{query}"</h2>
-            <p className="text-zinc-400 text-sm">
+            <p className="text-gray-400 text-sm">
               Suggestions: check spelling, try different keywords, or search for a popular title.
             </p>
           </div>

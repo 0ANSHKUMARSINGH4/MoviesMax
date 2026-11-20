@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Hero from "../components/media/Hero";
 import MovieRow from "../components/media/MovieRow";
 import Top10Row from "../components/media/Top10Row";
+import BentoDiscoveryGrid from "../components/media/BentoDiscoveryGrid";
+import AestheticQuoteRoundup from "../components/media/AestheticQuoteRoundup";
 import MovieModal from "../components/modal/MovieModal";
 import { fetchCategoryMovies } from "../utils/movieApi";
 
@@ -16,30 +18,42 @@ const Webseries = () => {
   }, []);
 
   return (
-    <div className="pb-24 min-h-screen bg-[#141414] text-white">
+    <div className="pb-24 min-h-screen bg-[#110B20] text-white">
       {/* 1. CINEMATIC TV HERO */}
       <Hero heroItems={heroSeries} onPlay={setSelectedMovie} />
 
-      {/* 2. NETFLIX TV SHOW ROWS */}
-      <div className="-mt-12 sm:-mt-20 md:-mt-28 relative z-20 space-y-4">
+      {/* 2. TOP 10 SHOWS */}
+      <div className="-mt-12 sm:-mt-20 md:-mt-24 relative z-20 space-y-4">
         <Top10Row
-          title="Top 10 TV Shows Today"
+          title="Top 10 TV Series Worldwide"
+          categoryKey="popular-tv"
+          onMovieClick={setSelectedMovie}
+        />
+
+        {/* 3. BENTO DISCOVERY GRID */}
+        <div className="py-4">
+          <BentoDiscoveryGrid vertical="series" onMovieClick={setSelectedMovie} />
+        </div>
+
+        {/* 4. POPULAR TV & CRITICALLY ACCLAIMED */}
+        <MovieRow
+          title="Popular Binge-Worthy TV"
           categoryKey="popular-tv"
           onMovieClick={setSelectedMovie}
         />
 
         <MovieRow
-          title="Popular TV Shows"
-          categoryKey="popular-tv"
-          onMovieClick={setSelectedMovie}
-        />
-
-        <MovieRow
-          title="Critically Acclaimed TV Shows"
+          title="Critically Acclaimed Dramas"
           categoryKey="top-tv"
           onMovieClick={setSelectedMovie}
         />
 
+        {/* 5. AESTHETIC SERIES DIALOGUE */}
+        <div className="py-4">
+          <AestheticQuoteRoundup vertical="series" />
+        </div>
+
+        {/* 6. KOREAN DRAMAS & SCI-FI */}
         <MovieRow
           title="Korean Dramas & Asian Hits"
           categoryKey="kdrama"
@@ -47,7 +61,7 @@ const Webseries = () => {
         />
 
         <MovieRow
-          title="Sci-Fi & Fantasy Series"
+          title="Sci-Fi & High Fantasy TV"
           categoryKey="scifi"
           onMovieClick={setSelectedMovie}
         />
@@ -59,7 +73,7 @@ const Webseries = () => {
         />
       </div>
 
-      {/* 3. MODAL */}
+      {/* 7. CINEMA THEATRE MODAL */}
       {selectedMovie && (
         <MovieModal
           movie={selectedMovie}

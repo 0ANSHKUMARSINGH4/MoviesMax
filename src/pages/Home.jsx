@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Hero from "../components/media/Hero";
 import MovieRow from "../components/media/MovieRow";
 import Top10Row from "../components/media/Top10Row";
+import BentoDiscoveryGrid from "../components/media/BentoDiscoveryGrid";
+import AestheticQuoteRoundup from "../components/media/AestheticQuoteRoundup";
 import MovieModal from "../components/modal/MovieModal";
 import { fetchTrendingMovies } from "../utils/movieApi";
 
@@ -16,84 +18,77 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="pb-24 min-h-screen bg-[#141414] text-white">
-      {/* 1. CINEMATIC BILLBOARD HERO */}
+    <div className="pb-24 min-h-screen bg-[#0B1120] text-white">
+      {/* 1. CINEMATIC BLUE & WHITE BILLBOARD HERO */}
       <Hero heroItems={heroItems} onPlay={setSelectedMovie} />
 
-      {/* 2. OVERLAPPING NETFLIX CAROUSEL ROWS */}
-      <div className="-mt-12 sm:-mt-20 md:-mt-28 relative z-20 space-y-4">
-        {/* TOP 10 TODAY */}
+      {/* 2. TOP 10 WORLDWIDE BLOCKBUSTERS */}
+      <div className="-mt-12 sm:-mt-20 md:-mt-24 relative z-20 space-y-4">
         <Top10Row
-          title="Top 10 in Movies & TV Today"
+          title="Top 10 Global Blockbusters"
           categoryKey="top-10"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* TRENDING NOW */}
+        {/* 3. TRENDING NOW */}
         <MovieRow
-          title="Trending Now"
+          title="Trending Blockbusters"
           categoryKey="trending"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* POPULAR MOVIES */}
+        {/* 4. CINEMATIC BENTO DISCOVERY GRID (Unique MoviesMax Editorial) */}
+        <div className="py-4">
+          <BentoDiscoveryGrid vertical="movies" onMovieClick={setSelectedMovie} />
+        </div>
+
+        {/* 5. POPULAR MOVIES & PRESTIGE SERIES */}
         <MovieRow
-          title="Popular Movies"
+          title="Popular Hollywood & World Cinema"
           categoryKey="popular-movies"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* BINGE-WORTHY TV SHOWS */}
         <MovieRow
-          title="Binge-Worthy TV Shows"
+          title="Binge-Worthy TV Series"
           categoryKey="popular-tv"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* TOP RATED ANIME */}
+        {/* 6. AESTHETIC DIALOGUE ROUNDUP (Unique Words That Resonate) */}
+        <div className="py-4">
+          <AestheticQuoteRoundup vertical="movies" />
+        </div>
+
+        {/* 7. ANIME MASTERPIECES */}
         <MovieRow
-          title="Top Rated Anime"
+          title="Top Anime Masterpieces"
           categoryKey="trending-anime"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* ACTION BLOCKBUSTERS */}
+        {/* 8. ACTION & SCI-FI */}
         <MovieRow
-          title="Action & Adventure"
+          title="Action & High Adrenaline"
           categoryKey="action"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* SCI-FI & FANTASY */}
         <MovieRow
           title="Sci-Fi & Cyberpunk"
           categoryKey="scifi"
           onMovieClick={setSelectedMovie}
         />
 
-        {/* K-DRAMAS */}
+        {/* 9. KOREAN DRAMAS & ASIAN CINEMA */}
         <MovieRow
-          title="Korean Dramas & International"
+          title="Korean Dramas & Asian Cinema"
           categoryKey="kdrama"
-          onMovieClick={setSelectedMovie}
-        />
-
-        {/* COMEDY HITS */}
-        <MovieRow
-          title="Comedy Hits"
-          categoryKey="comedy"
-          onMovieClick={setSelectedMovie}
-        />
-
-        {/* HORROR & THRILLERS */}
-        <MovieRow
-          title="Horror & Thrillers"
-          categoryKey="horror"
           onMovieClick={setSelectedMovie}
         />
       </div>
 
-      {/* 3. NETFLIX MOVIE MODAL */}
+      {/* 10. POLISHED CINEMA THEATRE MODAL */}
       {selectedMovie && (
         <MovieModal
           movie={selectedMovie}
