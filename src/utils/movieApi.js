@@ -1,5 +1,20 @@
 const BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
+const apiCache = new Map();
+const CACHE_LIFETIME_MS = 10 * 60 * 1000; // 10 minutes cache
+
+async function cachedFetch(url) {
+  const cached = apiCache.get(url);
+  if (cached && Date.now() - cached.timestamp < CACHE_LIFETIME_MS) {
+    return cached.data;
+  }
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+  const data = await res.json();
+  apiCache.set(url, { data, timestamp: Date.now() });
+  return data;
+}
+
 function getToken() {
   return localStorage.getItem('moviesmax-token');
 }
@@ -11,8 +26,7 @@ function authHeaders() {
 
 export async function fetchTrendingMovies() {
   try {
-    const res = await fetch(`${BASE}/movies/trending`);
-    const data = await res.json();
+    const data = await cachedFetch(`${BASE}/movies/trending`);
     return data.results || [];
   } catch (e) {
     console.error('fetchTrendingMovies error:', e);
@@ -22,8 +36,7 @@ export async function fetchTrendingMovies() {
 
 export async function fetchCategoryMovies(categoryKey) {
   try {
-    const res = await fetch(`${BASE}/movies/category/${categoryKey}`);
-    const data = await res.json();
+    const data = await cachedFetch(`${BASE}/movies/category/${categoryKey}`);
     return data.results || [];
   } catch (e) {
     console.error(`fetchCategoryMovies(${categoryKey}) error:`, e);
@@ -33,8 +46,7 @@ export async function fetchCategoryMovies(categoryKey) {
 
 export async function fetchMoviesByVertical(vertical) {
   try {
-    const res = await fetch(`${BASE}/movies/discover?vertical=${vertical}`);
-    const data = await res.json();
+    const data = await cachedFetch(`${BASE}/movies/discover?vertical=${vertical}`);
     return data.results || [];
   } catch (e) {
     console.error('fetchMoviesByVertical error:', e);
@@ -57,8 +69,7 @@ export async function fetchMoviesByCategory(categoryName) {
     else if (cat.includes('kdrama') || cat.includes('korean')) key = 'kdrama';
     else if (cat.includes('top 10')) key = 'top-10';
 
-    const res = await fetch(`${BASE}/movies/category/${key}`);
-    const data = await res.json();
+    const data = await cachedFetch(`${BASE}/movies/category/${key}`);
     return data.results || [];
   } catch (e) {
     console.error('fetchMoviesByCategory error:', e);
@@ -79,9 +90,7 @@ export async function searchMovies(query) {
 
 export async function fetchMovieDetails(tmdbId) {
   try {
-    const res = await fetch(`${BASE}/movies/${tmdbId}`);
-    if (!res.ok) return null;
-    return await res.json();
+    return await cachedFetch(`${BASE}/movies/${tmdbId}`);
   } catch (e) {
     console.error('fetchMovieDetails error:', e);
     return null;

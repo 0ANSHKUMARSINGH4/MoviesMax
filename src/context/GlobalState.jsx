@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { fetchMe, fetchPlaylists } from '../utils/movieApi';
 
 export const GlobalContext = createContext();
@@ -58,20 +58,23 @@ export const GlobalProvider = ({ children }) => {
     [defaultPlaylist]
   );
 
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      loading,
+      playlists,
+      defaultPlaylist,
+      login,
+      logout,
+      isInWatchlist,
+      setPlaylists,
+    }),
+    [user, token, loading, playlists, defaultPlaylist, login, logout, isInWatchlist]
+  );
+
   return (
-    <GlobalContext.Provider
-      value={{
-        user,
-        token,
-        loading,
-        playlists,
-        defaultPlaylist,
-        login,
-        logout,
-        isInWatchlist,
-        setPlaylists,
-      }}
-    >
+    <GlobalContext.Provider value={value}>
       {children}
     </GlobalContext.Provider>
   );

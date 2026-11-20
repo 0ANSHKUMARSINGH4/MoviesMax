@@ -28,9 +28,19 @@ const TMDB_GENRES = {
   10768: 'War & Politics',
 };
 
-export function getMediaImageUrl(path, size = 'w500') {
+export function getMediaImageUrl(path, size = 'w342') {
   if (!path || path === 'N/A') return null;
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    // Prevent multi-megabyte /original/ uncompressed image downloads that cause frame lag
+    if (path.includes('image.tmdb.org/t/p/original/')) {
+      const targetSize = size === 'w342' ? 'w342' : 'w1280';
+      return path.replace('/t/p/original/', `/t/p/${targetSize}/`);
+    }
+    if (path.includes('image.tmdb.org/t/p/w600_and_h900_bestv2/')) {
+      return path.replace('/t/p/w600_and_h900_bestv2/', `/t/p/${size}/`);
+    }
+    return path;
+  }
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `https://image.tmdb.org/t/p/${size}${cleanPath}`;
 }
@@ -66,8 +76,8 @@ export function normalizeMedia(item) {
     id: String(item.id || item.tmdbId || Math.random()),
     title: item.title || item.name || 'Untitled',
     original_title: item.original_title || item.original_name || item.title || item.name || '',
-    poster_path: getMediaImageUrl(rawPoster, 'w500'),
-    backdrop_path: getMediaImageUrl(rawBackdrop, 'original'),
+    poster_path: getMediaImageUrl(rawPoster, 'w342'),
+    backdrop_path: getMediaImageUrl(rawBackdrop, 'w1280'),
     vote_average: rating !== null && !isNaN(rating) ? rating : null,
     release_date: item.release_date || item.first_air_date || '',
     overview: item.overview || item.synopsis || item.description || '',

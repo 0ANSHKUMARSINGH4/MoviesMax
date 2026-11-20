@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { Play, Plus, Check, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
@@ -9,7 +9,7 @@ const MovieCard = ({ movie, onMovieClick }) => {
   const navigate = useNavigate();
   const { user, defaultPlaylist, isInWatchlist, setPlaylists } = useContext(GlobalContext);
 
-  const item = normalizeMedia(movie);
+  const item = useMemo(() => normalizeMedia(movie), [movie]);
   if (!item) return null;
 
   const inWatchlist = user && item.id ? isInWatchlist(item.id) : false;
@@ -48,15 +48,16 @@ const MovieCard = ({ movie, onMovieClick }) => {
   return (
     <div
       onClick={() => onMovieClick && onMovieClick(item)}
-      className="relative flex-none w-36 sm:w-44 md:w-52 lg:w-56 cursor-pointer select-none group/card py-2"
+      className="relative flex-none w-36 sm:w-44 md:w-52 lg:w-56 cursor-pointer select-none group/card py-2 transform-gpu"
     >
-      <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#111827] border border-white/10 shadow-lg transition-all duration-300 ease-out group-hover/card:scale-105 group-hover/card:shadow-[0_0_25px_rgba(59,130,246,0.35)] group-hover/card:border-blue-500/60 z-10 group-hover/card:z-30">
+      <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#111827] border border-white/10 shadow-lg transition-transform duration-200 ease-out group-hover/card:scale-105 group-hover/card:border-blue-500/60 z-10 group-hover/card:z-30">
         {/* POSTER IMAGE */}
         <img
           src={item.poster_path || item.backdrop_path}
           alt={item.title}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+          decoding="async"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
         />
 
         {/* BOTTOM GRADIENT MASK */}
@@ -76,8 +77,8 @@ const MovieCard = ({ movie, onMovieClick }) => {
         </div>
 
         {/* HOVER PLAY BUTTON (CENTER) */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-20">
-          <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transform scale-90 group-hover/card:scale-100 transition-transform duration-200 hover:scale-110 hover:bg-blue-50">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-20 pointer-events-none">
+          <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-2xl transform scale-90 group-hover/card:scale-100 transition-transform duration-200">
             <Play size={18} fill="black" className="translate-x-0.5" />
           </div>
         </div>
@@ -113,4 +114,4 @@ const MovieCard = ({ movie, onMovieClick }) => {
   );
 };
 
-export default MovieCard;
+export default React.memo(MovieCard);

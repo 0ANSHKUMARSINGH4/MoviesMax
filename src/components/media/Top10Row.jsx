@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Play, Plus, Check, ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
@@ -148,11 +148,12 @@ const Top10Row = ({
                     </div>
 
                     {/* POSTER CARD */}
-                    <div className="relative aspect-[2/3] w-32 sm:w-40 md:w-44 rounded-2xl overflow-hidden bg-[#111827] shadow-xl border border-white/10 z-10 transition-all duration-300 ease-out group-hover/card:scale-105 group-hover/card:shadow-[0_0_25px_rgba(59,130,246,0.4)] group-hover/card:border-blue-500/60">
+                    <div className="relative aspect-[2/3] w-32 sm:w-40 md:w-44 rounded-2xl overflow-hidden bg-[#111827] shadow-xl border border-white/10 z-10 transition-transform duration-200 ease-out group-hover/card:scale-105 group-hover/card:border-blue-500/60">
                       <img
                         src={item.poster_path || item.backdrop_path}
                         alt={item.title}
                         loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
 
@@ -201,4 +202,4 @@ const Top10Row = ({
   );
 };
 
-export default Top10Row;
+export default React.memo(Top10Row);

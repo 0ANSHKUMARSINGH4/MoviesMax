@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalState";
 import { Play, Info, Plus, Check, Volume2, VolumeX, Sparkles, Star } from "lucide-react";
@@ -80,6 +80,7 @@ const Hero = ({ heroItems, items, onPlay }) => {
                 alt={item.title}
                 className="w-full h-full object-cover object-[center_20%] opacity-85 transition-transform duration-1000 ease-out"
                 loading={index === 0 ? "eager" : "lazy"}
+                decoding={index === 0 ? "sync" : "async"}
               />
               {/* BLUE & NAVY AMBIENT GRADIENT MASKS */}
               <div className="absolute inset-0 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/60 to-transparent w-full md:w-3/5" />
@@ -186,4 +187,4 @@ const Hero = ({ heroItems, items, onPlay }) => {
   );
 };
 
-export default Hero;
+export default React.memo(Hero);

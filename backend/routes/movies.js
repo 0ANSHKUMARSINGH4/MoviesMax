@@ -5,6 +5,26 @@ const axios = require('axios');
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const API_KEY = process.env.TMDB_API_KEY || '5208094dcf313d93dd5f1f3acd69cced';
 
+const serverCache = new Map();
+const SERVER_CACHE_TTL = 15 * 60 * 1000; // 15 mins
+
+function getCached(key) {
+  const hit = serverCache.get(key);
+  if (hit && Date.now() - hit.time < SERVER_CACHE_TTL) {
+    return hit.data;
+  }
+  return null;
+}
+
+function setCached(key, data) {
+  serverCache.set(key, { data, time: Date.now() });
+}
+
+function sendCachedJson(res, data) {
+  res.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=86400');
+  res.json(data);
+}
+
 function normalizeItem(item) {
   return {
     ...item,
@@ -20,12 +40,17 @@ function normalizeItem(item) {
 // GET /api/movies/trending (public)
 router.get('/trending', async (req, res, next) => {
   try {
+    const cached = getCached('trending');
+    if (cached) return sendCachedJson(res, cached);
+
     const { data } = await axios.get(`${TMDB_BASE}/trending/all/week`, {
       params: { api_key: API_KEY },
       timeout: 6000,
     });
     const results = (data.results || []).map(normalizeItem);
-    res.json({ ...data, results });
+    const payload = { ...data, results };
+    setCached('trending', payload);
+    sendCachedJson(res, payload);
   } catch (err) {
     next(err);
   }
@@ -35,6 +60,10 @@ router.get('/trending', async (req, res, next) => {
 router.get('/category/:key', async (req, res, next) => {
   try {
     const { key } = req.params;
+    const cacheKey = `category:${key}`;
+    const cached = getCached(cacheKey);
+    if (cached) return sendCachedJson(res, cached);
+
     let endpoint = `${TMDB_BASE}/discover/movie`;
     let params = { api_key: API_KEY, sort_by: 'popularity.desc' };
 
@@ -112,7 +141,9 @@ router.get('/category/:key', async (req, res, next) => {
 
     const { data } = await axios.get(endpoint, { params, timeout: 6000 });
     const results = (data.results || []).map(normalizeItem);
-    res.json({ ...data, results });
+    const payload = { ...data, results };
+    setCached(cacheKey, payload);
+    sendCachedJson(res, payload);
   } catch (err) {
     next(err);
   }
@@ -123,12 +154,18 @@ router.get('/search', async (req, res, next) => {
   try {
     const query = req.query.q || '';
     if (!query.trim()) return res.json({ results: [] });
+    const cacheKey = `search:${query.toLowerCase()}`;
+    const cached = getCached(cacheKey);
+    if (cached) return sendCachedJson(res, cached);
+
     const { data } = await axios.get(`${TMDB_BASE}/search/multi`, {
       params: { query, api_key: API_KEY },
       timeout: 6000,
     });
     const results = (data.results || []).filter(i => i.backdrop_path || i.poster_path).map(normalizeItem);
-    res.json({ ...data, results });
+    const payload = { ...data, results };
+    setCached(cacheKey, payload);
+    sendCachedJson(res, payload);
   } catch (err) {
     next(err);
   }
@@ -138,6 +175,10 @@ router.get('/search', async (req, res, next) => {
 router.get('/discover', async (req, res, next) => {
   try {
     const vertical = req.query.vertical || 'movies';
+    const cacheKey = `discover:${vertical}`;
+    const cached = getCached(cacheKey);
+    if (cached) return sendCachedJson(res, cached);
+
     let endpoint;
     let params = { api_key: API_KEY, sort_by: 'popularity.desc' };
 
@@ -155,7 +196,9 @@ router.get('/discover', async (req, res, next) => {
 
     const { data } = await axios.get(endpoint, { params, timeout: 6000 });
     const results = (data.results || []).map(normalizeItem);
-    res.json({ ...data, results });
+    const payload = { ...data, results };
+    setCached(cacheKey, payload);
+    sendCachedJson(res, payload);
   } catch (err) {
     next(err);
   }
@@ -165,6 +208,10 @@ router.get('/discover', async (req, res, next) => {
 router.get('/:tmdbId', async (req, res, next) => {
   try {
     const { tmdbId } = req.params;
+    const cacheKey = `movie:${tmdbId}`;
+    const cached = getCached(cacheKey);
+    if (cached) return sendCachedJson(res, cached);
+
     let data;
 
     try {
@@ -206,9 +253,19 @@ router.get('/:tmdbId', async (req, res, next) => {
       ? data.similar.results.slice(0, 6).map(normalizeItem)
       : [];
 
-    res.json({
+    const payload = {
       ...normalizeItem(data),
       trailerKey,
+      cast,
+      director,
+      similar,
+    };
+    setCached(cacheKey, payload);
+    sendCachedJson(res, payload);
+  } catch (err) {
+    next(err);
+  }
+});
       cast,
       director,
       similar,

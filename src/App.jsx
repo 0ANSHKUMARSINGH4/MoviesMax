@@ -24,18 +24,16 @@ const PageSkeleton = () => (
   <div className="page-skeleton" aria-hidden="true" />
 );
 
-// Page transition wrapper using motionPageTransition from DESIGN.md §F
+// Ultra-snappy page transitions (zero sluggish exit lag)
 const pageVariants = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0 },
   animate: {
     opacity: 1,
-    y: 0,
-    transition: { type: "tween", duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 0.18, ease: "easeOut" },
   },
   exit: {
     opacity: 0,
-    y: -8,
-    transition: { type: "tween", duration: 0.2, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 0.1 },
   },
 };
 
@@ -43,7 +41,7 @@ function AnimatedRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="popLayout" initial={false}>
       <motion.div
         key={location.pathname}
         variants={pageVariants}

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchCategoryMovies, fetchMoviesByCategory } from "../../utils/movieApi";
 import MovieCard from "./MovieCard";
@@ -83,7 +83,7 @@ const MovieRow = ({
         {/* SCROLLABLE TRACK */}
         <div
           ref={rowRef}
-          className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth px-5 sm:px-8 lg:px-12 py-2"
+          className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth px-5 sm:px-8 lg:px-12 py-2 transform-gpu"
         >
           {loading
             ? Array.from({ length: 7 }).map((_, i) => (
@@ -114,4 +114,4 @@ const MovieRow = ({
   );
 };
 
-export default MovieRow;
+export default React.memo(MovieRow);

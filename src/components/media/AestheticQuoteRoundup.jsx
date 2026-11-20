@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Quote, Sparkles } from "lucide-react";
 import { VERTICAL_QUOTES } from "../../utils/movieData";
+import { getMediaImageUrl } from "../../utils/mediaUtils";
 import Section from "../layout/Section";
 
 const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
@@ -64,10 +65,11 @@ const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
             {/* Background Parallax Image */}
             <div className="absolute inset-0">
               <img
-                src={item.image}
+                src={getMediaImageUrl(item.image, 'w780')}
                 alt={item.movie}
                 loading="lazy"
-                className="w-full h-full object-cover opacity-50 transition-transform duration-[15s] ease-linear group-hover:scale-110"
+                decoding="async"
+                className="w-full h-full object-cover opacity-50 transition-transform duration-700 ease-out group-hover:scale-105"
               />
             </div>
 

@@ -47,6 +47,15 @@ body {
   overflow-x: hidden;
 }
 
+/* Offscreen images skip layout/paint until scrolled into view */
+img {
+  content-visibility: auto;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ── Cinematic Keyframes ─────────────────────────────────────── */
 @keyframes kenburns {
   0% { transform: scale3d(1, 1, 1) translate3d(0, 0, 0); }
