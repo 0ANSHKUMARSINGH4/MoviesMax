@@ -16,6 +16,19 @@ const MovieModal = ({ movie, onClose }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose && onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = origOverflow;
+    };
+  }, [onClose]);
+
+  useEffect(() => {
     if (!media?.id) return;
     setLoading(true);
     setVideoKey(null);
@@ -27,8 +40,8 @@ const MovieModal = ({ movie, onClose }) => {
         if (d) {
           setVideoKey(d.trailerKey || null);
           setDetails(d);
-          setCast(d.cast || []);
-          setSimilar(d.similar || []);
+          setCast(Array.isArray(d.cast) ? d.cast : []);
+          setSimilar(Array.isArray(d.similar) ? d.similar : []);
         }
         setLoading(false);
       })
@@ -37,14 +50,15 @@ const MovieModal = ({ movie, onClose }) => {
 
   if (!media) return null;
 
-  const inWatchlist = user ? isInWatchlist(media?.id) : false;
-  const ratingValue = details?.vote_average || media.vote_average || 8.0;
-  const scoreOutOf10 = Number(ratingValue).toFixed(1);
+  const inWatchlist = user && media?.id ? isInWatchlist(media.id) : false;
+  const rawRating = Number(details?.vote_average ?? media.vote_average ?? 8.0);
+  const ratingValue = isNaN(rawRating) ? 8.0 : Math.min(10, Math.max(0, rawRating));
+  const scoreOutOf10 = ratingValue.toFixed(1);
   const matchPercentage = Math.min(99, Math.max(80, Math.round(ratingValue * 10) + 4));
 
   // Circular Score calculation
   const circumference = 2 * Math.PI * 32;
-  const strokeDashoffset = circumference - (Math.min(10, ratingValue) / 10) * circumference;
+  const strokeDashoffset = circumference - (ratingValue / 10) * circumference;
 
   const handleWatchlistClick = async () => {
     if (!user) {
@@ -75,11 +89,12 @@ const MovieModal = ({ movie, onClose }) => {
     }
   };
 
-  const displayGenres = details?.genres || media.genres || [];
+  const rawGenres = details?.genres || media.genres || [];
+  const displayGenres = Array.isArray(rawGenres) ? rawGenres : [];
   const displayOverview = details?.overview || media.overview || "";
   const displayRelease = details?.release_date || media.release_date || "";
   const displayRuntime = details?.runtime ? `${details.runtime} min` : media.runtime || "";
-  const displayDirector = details?.director || media.director || "";
+  const displayDirector = typeof details?.director === 'string' ? details.director : (typeof media?.director === 'string' ? media.director : "");
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 md:p-6 select-none overflow-y-auto">
@@ -189,14 +204,18 @@ const MovieModal = ({ movie, onClose }) => {
 
                 {/* Genre Tags */}
                 <div className="flex gap-2 flex-wrap pt-1">
-                  {displayGenres.map((g, i) => (
-                    <span
-                      key={g.id || g.name || i}
-                      className="text-xs font-medium text-gray-300 bg-white/5 border border-white/10 px-3 py-1 rounded-full"
-                    >
-                      {g.name || g}
-                    </span>
-                  ))}
+                  {displayGenres.map((g, i) => {
+                    const genreName = typeof g === "string" ? g : (g && typeof g === "object" ? g.name : "");
+                    if (!genreName) return null;
+                    return (
+                      <span
+                        key={g?.id || genreName || i}
+                        className="text-xs font-medium text-gray-300 bg-white/5 border border-white/10 px-3 py-1 rounded-full"
+                      >
+                        {genreName}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -251,7 +270,7 @@ const MovieModal = ({ movie, onClose }) => {
                     <div>
                       <span className="text-[11px] uppercase tracking-wider block text-gray-500 font-semibold">Starring</span>
                       <span className="text-gray-200 font-medium line-clamp-2">
-                        {cast.slice(0, 4).map((c) => c.name).join(", ")}
+                        {cast.slice(0, 4).map((c) => (typeof c === "string" ? c : c?.name || "")).filter(Boolean).join(", ")}
                       </span>
                     </div>
                   )}

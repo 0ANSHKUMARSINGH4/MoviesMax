@@ -5,6 +5,7 @@ import NewsCarousel from "../components/media/NewsCarousel";
 import Leaderboard from "../components/media/Leaderboard";
 import BentoDiscoveryGrid from "../components/media/BentoDiscoveryGrid";
 import MovieModal from "../components/modal/MovieModal";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import { Gamepad2, Play, Radio, Users } from "lucide-react";
 
 const LIVE_TOURNAMENTS = [
@@ -215,10 +216,12 @@ const Esports = () => {
 
       {/* 6. MODAL */}
       {selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-        />
+        <ErrorBoundary onReset={() => setSelectedMovie(null)}>
+          <MovieModal
+            movie={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

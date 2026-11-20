@@ -5,6 +5,7 @@ import Top10Row from "../components/media/Top10Row";
 import BentoDiscoveryGrid from "../components/media/BentoDiscoveryGrid";
 import AestheticQuoteRoundup from "../components/media/AestheticQuoteRoundup";
 import MovieModal from "../components/modal/MovieModal";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import { fetchCategoryMovies } from "../utils/movieApi";
 
 const Webseries = () => {
@@ -75,10 +76,12 @@ const Webseries = () => {
 
       {/* 7. CINEMA THEATRE MODAL */}
       {selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-        />
+        <ErrorBoundary onReset={() => setSelectedMovie(null)}>
+          <MovieModal
+            movie={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import MovieModal from "../components/modal/MovieModal";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import MovieCard from "../components/media/MovieCard";
 import { searchMovies } from "../utils/movieApi";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
@@ -89,10 +90,12 @@ const Search = () => {
       </div>
 
       {selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-        />
+        <ErrorBoundary onReset={() => setSelectedMovie(null)}>
+          <MovieModal
+            movie={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

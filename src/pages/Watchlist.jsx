@@ -3,6 +3,7 @@ import { GlobalContext } from "../context/GlobalState";
 import { Bookmark, ArrowRight, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import MovieModal from "../components/modal/MovieModal";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import MovieCard from "../components/media/MovieCard";
 import { removeMovieFromPlaylist, fetchPlaylists } from "../utils/movieApi";
 
@@ -105,10 +106,12 @@ const Watchlist = () => {
 
       {/* THEATRE MODAL */}
       {selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-        />
+        <ErrorBoundary onReset={() => setSelectedMovie(null)}>
+          <MovieModal
+            movie={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Loader2, Compass } from "lucide-react";
 import MovieModal from "../components/modal/MovieModal";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import MovieCard from "../components/media/MovieCard";
 import { fetchMoviesByCategory } from "../utils/movieApi";
 import { CATEGORY_CATALOG } from "../utils/movieData";
@@ -196,10 +197,12 @@ const Explore = () => {
 
       {/* MODAL */}
       {selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-        />
+        <ErrorBoundary onReset={() => setSelectedMovie(null)}>
+          <MovieModal
+            movie={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );
