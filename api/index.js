@@ -1,5 +1,5 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const app = require('../backend/app.js');
+import app from '../backend/app.js';
 
-export default app;
+export default function handler(req, res) {
+  return app(req, res);
+}

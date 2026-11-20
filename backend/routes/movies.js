@@ -266,13 +266,5 @@ router.get('/:tmdbId', async (req, res, next) => {
     next(err);
   }
 });
-      cast,
-      director,
-      similar,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
 
 module.exports = router;
