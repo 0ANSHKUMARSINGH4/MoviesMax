@@ -650,73 +650,65 @@ export const VERTICAL_QUOTES = {
   movies: [
     {
       id: "qm-1",
-
       youtube_id: "zSWdZVtXT7E",
       quote: "Love is the one thing we're capable of perceiving that transcends dimensions of time and space.",
       movie: "Interstellar",
       character: "Brand",
-      image: "https://image.tmdb.org/t/p/original/xJHokMbljvjEVAql3l5I6ZfYS9.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/8sNiAPPYU14PUepFNeSNGUTiHW.jpg"
     },
     {
       id: "qm-2",
-
       youtube_id: "EXeTwQWrcwY",
       quote: "You either die a hero, or you live long enough to see yourself become the villain.",
       movie: "The Dark Knight",
       character: "Harvey Dent",
-      image: "https://image.tmdb.org/t/p/original/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg"
     },
     {
       id: "qm-3",
-
       youtube_id: "owK1qxDselE",
       quote: "What we do in life echoes in eternity.",
       movie: "Gladiator",
       character: "Maximus Decimus Meridius",
-      image: "https://image.tmdb.org/t/p/original/56v2KjBlU4aAB14sIGTe1T156wD.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/Ar7QuJ7sJEiC0oP3I8fKBKIQD9u.jpg"
     },
     {
       id: "qm-4",
-
       youtube_id: "qtRKdVHc-cE",
       quote: "It's only after we've lost everything that we're free to do anything.",
       movie: "Fight Club",
       character: "Tyler Durden",
-      image: "https://image.tmdb.org/t/p/original/hZkgoQYus5vegHoetLkCJzb17zJ.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/c6OLXfKAk5BKeR6broC8pYiCquX.jpg"
     }
   ],
 
   series: [
     {
       id: "qs-1",
-
       youtube_id: "HhesaQXLuRY",
       quote: "I am not in danger, Skyler. I AM the danger. A guy opens his door and gets shot, and you think that of me? No. I am the one who knocks!",
       movie: "Breaking Bad",
       character: "Walter White",
-      image: "https://image.tmdb.org/t/p/original/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
     },
     {
       id: "qs-2",
-
       youtube_id: "t3DY1p1xLTo",
       quote: "You have to be a killer. If you can't be a killer, then I'm afraid you can't be the one.",
       movie: "Succession",
       character: "Logan Roy",
-      image: "https://image.tmdb.org/t/p/original/e9Gom2MffT0y7053J2L1hKeqx5Z.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/d87JXX3DLkRJMfm5StCmmnmhHuX.jpg"
     },
     {
       id: "qs-3",
-
       youtube_id: "KPLWWIOCOOQ",
       quote: "Chaos isn't a pit. Chaos is a ladder.",
       movie: "Game of Thrones",
       character: "Littlefinger",
-      image: "https://image.tmdb.org/t/p/original/etj5CuMuam3guZq0AIpsaj2NIvs.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/zZqpAXxVSBtxV9qPBcscfXBcL2w.jpg"
     },
     {
       id: "qs-4",
-
       youtube_id: "3u7EIiohs6U",
       quote: "Be curious, not judgmental.",
       movie: "Ted Lasso",
@@ -728,39 +720,35 @@ export const VERTICAL_QUOTES = {
   anime: [
     {
       id: "qa-1",
-
       youtube_id: "M_OauHnAFc8",
       quote: "If you win, you live. If you lose, you die. If you don't fight, you can't win!",
       movie: "Attack on Titan",
       character: "Eren Yeager",
-      image: "https://cdn.myanimelist.net/images/anime/1000/110531l.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"
     },
     {
       id: "qa-2",
-
       youtube_id: "ZEVO3ZQIcNE",
       quote: "It's not about how long you live, but how deep the connection is with those you meet along the way.",
       movie: "Frieren: Beyond Journey's End",
       character: "Frieren",
-      image: "https://image.tmdb.org/t/p/original/kC6yO9dC1E7zO3Zt3gC9iH7pZ9w.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/rBOnrVlck7BIlGeWVlzYiZeg4l2.jpg"
     },
     {
       id: "qa-3",
-
       youtube_id: "MCm_2h5-W90",
       quote: "When do you think people die? When they are shot? No. When they are forgotten!",
       movie: "One Piece",
       character: "Dr. Hiriluk",
-      image: "https://cdn.myanimelist.net/images/anime/6/73245l.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/2rmK7mnchq9G3X92d7MIf22geAn.jpg"
     },
     {
       id: "qa-4",
-
       youtube_id: "NlJZ-YgAt-c",
       quote: "I'll take a potato chip... and EAT IT!",
       movie: "Death Note",
       character: "Light Yagami",
-      image: "https://cdn.myanimelist.net/images/anime/9/9453l.jpg"
+      image: "https://image.tmdb.org/t/p/w1280/z8IPicmEKXUO4I2UDdMEqw7RqOE.jpg"
     }
   ]
 };

@@ -8,8 +8,8 @@ const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
   const [isHovered, setIsHovered] = useState(false);
   const quotes = VERTICAL_QUOTES[vertical] || VERTICAL_QUOTES.movies;
 
-  // Duplicate quotes array for a seamless infinite loop
-  const infiniteQuotes = [...quotes, ...quotes];
+  // 4 repeats ensure seamless infinite loop across all screens (mobile up to 4K)
+  const infiniteQuotes = [...quotes, ...quotes, ...quotes, ...quotes];
 
   return (
     <Section as="section" className="relative py-8 sm:py-12 select-none overflow-hidden bg-[#0B1120]">
@@ -39,7 +39,7 @@ const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
           ) : (
             <>
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
-              <span>Auto-sliding • Hover over any card to pause</span>
+              <span>Continuous sliding • Hover over any card to pause</span>
             </>
           )}
         </div>
@@ -50,13 +50,18 @@ const AestheticQuoteRoundup = ({ vertical = "movies" }) => {
         className="relative w-full overflow-hidden py-4"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setIsHovered(false)}
       >
         {/* Left & Right Cinematic Edge Vignettes */}
         <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-28 md:w-40 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/80 to-transparent z-20 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-28 md:w-40 bg-gradient-to-l from-[#0B1120] via-[#0B1120]/80 to-transparent z-20 pointer-events-none" />
 
-        {/* INFINITE SLIDING MARQUEE TRACK */}
-        <div className="animate-quote-slider flex gap-5 sm:gap-7 items-center">
+        {/* INFINITE SLIDING MARQUEE TRACK (STOPS WHEN HOVERED) */}
+        <div
+          className="animate-quote-slider flex gap-5 sm:gap-7 items-center"
+          style={{ animationPlayState: isHovered ? "paused" : "running" }}
+        >
           {infiniteQuotes.map((item, index) => (
             <div
               key={`${item.id}-${index}`}
