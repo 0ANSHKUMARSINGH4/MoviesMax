@@ -89,9 +89,12 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* DESKTOP NAV LINKS */}
+          {/* DESKTOP NAV LINKS (Hide Movies, Series, Anime on homepage per requirements) */}
           <ul className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-semibold">
-            {NAV_LINKS.map((link) => {
+            {(location.pathname === "/"
+              ? NAV_LINKS.filter((link) => link.name === "Home" || link.name === "My Watchlist")
+              : NAV_LINKS
+            ).map((link) => {
               const isActive = location.pathname === link.path;
               return (
                 <li key={link.name}>
