@@ -6,10 +6,18 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// Attempt database connection
-connectDB();
+// Non-blocking database connection initialization
+let dbConnecting = false;
+const ensureDB = async (req, res, next) => {
+  if (mongoose.connection.readyState !== 1 && !dbConnecting) {
+    dbConnecting = true;
+    connectDB().finally(() => { dbConnecting = false; });
+  }
+  next();
+};
 
 const app = express();
+app.use(ensureDB);
 
 app.use(cors({
   origin: '*',

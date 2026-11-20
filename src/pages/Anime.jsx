@@ -19,7 +19,7 @@ const Anime = () => {
   }, []);
 
   return (
-    <div className="pb-24 min-h-screen bg-[#1A0A0A] text-white">
+    <div className="pb-24 min-h-screen bg-[#0B1120] text-white">
       {/* 1. CINEMATIC ANIME HERO */}
       <Hero heroItems={heroAnime} onPlay={setSelectedMovie} />
 

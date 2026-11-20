@@ -4,6 +4,7 @@ import MovieRow from "../components/media/MovieRow";
 import Top10Row from "../components/media/Top10Row";
 import BentoDiscoveryGrid from "../components/media/BentoDiscoveryGrid";
 import AestheticQuoteRoundup from "../components/media/AestheticQuoteRoundup";
+import PlaylistRecordDeck from "../components/media/PlaylistRecordDeck";
 import MovieModal from "../components/modal/MovieModal";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import { fetchTrendingMovies } from "../utils/movieApi";
@@ -38,7 +39,10 @@ const Home = () => {
           onMovieClick={setSelectedMovie}
         />
 
-        {/* 4. CINEMATIC BENTO DISCOVERY GRID (Unique MoviesMax Editorial) */}
+        {/* 4. INTERACTIVE 3D PLAYLIST RECORD DECK (Vinyl Record Carousel) */}
+        <PlaylistRecordDeck onPlay={setSelectedMovie} />
+
+        {/* 5. CINEMATIC BENTO DISCOVERY GRID (Unique MoviesMax Editorial) */}
         <div className="py-4">
           <BentoDiscoveryGrid vertical="movies" onMovieClick={setSelectedMovie} />
         </div>
